@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dshl.bigdata.web.dao.ShopRegiondepotDao" >
+  <resultMap id="BaseResultMap" type="com.dshl.bigdata.web.entity.ShopRegiondepot" >
+    <result column="RegionID" property="regionid" jdbcType="INTEGER" />
+    <result column="DepotId" property="depotid" jdbcType="INTEGER" />
+    <result column="RegionName" property="regionname" jdbcType="VARCHAR" />
+    <result column="Status" property="status" jdbcType="INTEGER" />
+    <result column="Path" property="path" jdbcType="VARCHAR" />
+    <result column="Depth" property="depth" jdbcType="INTEGER" />
+    <result column="DisplaySequence" property="displaysequence" jdbcType="INTEGER" />
+    <result column="IsDefault" property="isdefault" jdbcType="INTEGER" />
+    <result column="ParentId" property="parentid" jdbcType="INTEGER" />
+    <result column="ParentName" property="parentName" jdbcType="INTEGER" />
+    <result column="Longitude" property="longitude" jdbcType="REAL" />
+    <result column="Latitude" property="latitude" jdbcType="REAL" />
+    <result column="sumNum" property="sumNum" jdbcType="INTEGER" />
+    
+  </resultMap>
+  
+  <select id="selectByRegionID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+   SELECT region1.regionname,region2.regionname as ParentName 
+   FROM shop_regiondepot region1 
+   INNER JOIN shop_regiondepot region2 on region1.parentid = region2.regionid
+   where region1.Depth=2 and region1.regionid = #{regionid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectGroupByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+   SELECT sum(kwd.searchCount) as sumNum , rpt.parentid
+   FROM shop_users users 
+   INNER JOIN 
+   		shop_regiondepot rpt on users.regionid = rpt.regionid 
+   INNER JOIN 
+   		t_keyword kwd on kwd.userid = users.userid 
+   WHERE rpt.Depth = 2 
+   GROUP BY rpt.parentid
+  </select>
+  
+  <insert id="insert" parameterType="com.dshl.bigdata.web.entity.ShopRegiondepot" >
+    insert into shop_regiondepot (RegionID, DepotId, RegionName, 
+      Status, Path, Depth, 
+      DisplaySequence, IsDefault, ParentId, 
+      Longitude, Latitude)
+    values (#{regionid,jdbcType=INTEGER}, #{depotid,jdbcType=INTEGER}, #{regionname,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{path,jdbcType=VARCHAR}, #{depth,jdbcType=INTEGER}, 
+      #{displaysequence,jdbcType=INTEGER}, #{isdefault,jdbcType=INTEGER}, #{parentid,jdbcType=INTEGER}, 
+      #{longitude,jdbcType=REAL}, #{latitude,jdbcType=REAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dshl.bigdata.web.entity.ShopRegiondepot" >
+    insert into shop_regiondepot
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="regionid != null" >
+        RegionID,
+      </if>
+      <if test="depotid != null" >
+        DepotId,
+      </if>
+      <if test="regionname != null" >
+        RegionName,
+      </if>
+      <if test="status != null" >
+        Status,
+      </if>
+      <if test="path != null" >
+        Path,
+      </if>
+      <if test="depth != null" >
+        Depth,
+      </if>
+      <if test="displaysequence != null" >
+        DisplaySequence,
+      </if>
+      <if test="isdefault != null" >
+        IsDefault,
+      </if>
+      <if test="parentid != null" >
+        ParentId,
+      </if>
+      <if test="longitude != null" >
+        Longitude,
+      </if>
+      <if test="latitude != null" >
+        Latitude,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="regionid != null" >
+        #{regionid,jdbcType=INTEGER},
+      </if>
+      <if test="depotid != null" >
+        #{depotid,jdbcType=INTEGER},
+      </if>
+      <if test="regionname != null" >
+        #{regionname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="path != null" >
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="depth != null" >
+        #{depth,jdbcType=INTEGER},
+      </if>
+      <if test="displaysequence != null" >
+        #{displaysequence,jdbcType=INTEGER},
+      </if>
+      <if test="isdefault != null" >
+        #{isdefault,jdbcType=INTEGER},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=INTEGER},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=REAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

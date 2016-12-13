@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc   
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd  
+           http://www.springframework.org/schema/beans   
+           http://www.springframework.org/schema/beans/spring-beans.xsd  
+           http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 文件描述 -->
+	<description>Spring MVC Configuration</description>
+   <mvc:default-servlet-handler/>
+    <mvc:resources mapping="/js/**" location="/WEB-INF/js/" />
+	<mvc:resources mapping="/css/**" location="/WEB-INF/css/" />
+	<!-- 启用spring mvc 注解 -->
+	<context:annotation-config />
+	
+	
+	<!-- 指定freemark的配置文件 -->
+	<bean id="freemarkerStaticModelsProps" 
+        class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+        <property name="location" value="classpath:freemarkerstatic.properties" /> 
+    </bean>
+    <bean id="freemarkerStaticModels" 
+        class="com.dshl.bigdata.web.controller.freemarker.FreemarkerStaticModels" factory-method="getInstance">
+        <property name="staticModels" ref="freemarkerStaticModelsProps"/>
+    </bean>
+	
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<!--<property name="templateLoaderPath" value="/WEB-INF/pageBak" />-->
+		<property name="templateLoaderPath" value="/WEB-INF/views" />
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="webRoot" value="${webRoot}"></entry>
+			</map>
+		</property>
+	</bean>
+	<!-- 视图解析器 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="suffix">
+			<value>.html</value>
+		</property>
+		<property name="contentType" value="text/html;charset=UTF-8"></property>
+		<!-- 加载freemark的配置文件 -->
+		<property name="attributesMap" ref="freemarkerStaticModels"/>
+	</bean>
+	
+	<!-- 消息转换器 -->
+	<bean id="stringHttpMessageConverter"  
+		class="org.springframework.http.converter.StringHttpMessageConverter">  
+		<constructor-arg value="UTF-8" index="0"></constructor-arg>
+		<property name="supportedMediaTypes">  
+			<list>  
+				<value>text/plain;charset=UTF-8</value>  
+			</list>  
+		</property>  
+	</bean>  
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+	<mvc:annotation-driven/>
+	
+	<bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" >
+		<property name="supportedMediaTypes">
+			<list>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="application"/>
+					<constructor-arg index="1" value="json"/>
+					<constructor-arg index="2" value="UTF-8"/>
+				</bean>
+			</list>
+		</property>
+		<property name="objectMapper">
+			<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+				<property name="dateFormat">
+					<bean class="java.text.SimpleDateFormat">
+						<constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"></constructor-arg>
+					</bean>
+				</property>	
+			</bean>
+		</property>
+	</bean>
+	<bean class="com.dshl.bigdata.web.kafka.KafkaConsumerListener"/>
+	<context:component-scan base-package="com.dshl.bigdata.web.controller" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" /> 
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+  	</context:component-scan> 
+	<!-- <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" id="viewResolver">
+		<property name="ignoreAcceptHeader" value="true"></property>
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json"></entry>
+				<entry key="xml" value="application/xml"></entry>
+			</map>
+		</property>
+		<property name="defaultContentType" value="text/html"></property>
+		<property name="favorParameter" value="false"></property>
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="order" value="2"></property>
+					<property name="prefix" value="/WEB-INF/views/" />
+					<property name="suffix" value=".html" />
+				</bean>
+			</list>
+		</property>
+	</bean> -->
+	
+    <!-- <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionAttribute" value="ex"/>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="com.haier.common.BusinessException">error.html</prop>
+                <prop key="java.lang.RuntimeException">error.html</prop>
+            </props>
+        </property>
+    </bean> -->
+
+</beans>  

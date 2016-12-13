@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >商品名称</th>
+						<th>订单数</th>
+						<th>销售额</th>
+					</tr>
+				</thead>
+					<tbody>
+					 <#list products as p>
+						<tr>
+							<td>${p.productName!''}</td>
+							<td>${p.totalQuantity!''}</td>
+							<td>${p.totalAmount!''}</td>
+						</tr>
+					</#list>	
+					</tbody>
+					<td><@cont.pager pagerInfo = pagerInfo url ="product-iframe"/></td>
+				</table>

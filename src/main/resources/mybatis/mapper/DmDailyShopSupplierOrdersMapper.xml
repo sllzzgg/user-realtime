@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopSupplierOrdersDao">
+	<resultMap id="DmDailyShopSupplierOrdersResult" type="com.dshl.bigdata.web.entity.DmDailyShopSupplierOrders">
+			<result property="orderdate" column="orderdate" />
+			<result property="orderQuantity" column="orderQuantity" />
+			<result property="orderAmount" column="orderAmount" />
+			<result property="supplierId" column="supplierId" />
+			<result property="supplierName" column="supplierName" />
+	</resultMap>
+	<select id="get" parameterType="Integer" resultMap="DmDailyShopSupplierOrdersResult">
+		select
+		`orderdate`,`orderQuantity`,`orderAmount`,`supplierId`,`supplierName`
+		from `dm_daily_shop_supplier_orders`
+	</select>
+	
+	<select id="getSupplierOrdersByDate" parameterType="java.util.Map" resultMap="DmDailyShopSupplierOrdersResult">
+		SELECT 
+		 orderdate,
+		 orderQuantity,
+		 orderAmount,
+		 supplierName 
+		from dm_daily_shop_supplier_orders
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  orderdate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  orderdate  &lt;= #{param1.endDate}
+			</if>
+		</where>
+		ORDER BY orderdate desc limit 10
+	</select>
+</mapper>

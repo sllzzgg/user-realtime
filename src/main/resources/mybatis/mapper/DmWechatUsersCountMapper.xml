@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmWechatUsersCountDao">
+	<resultMap id="DmWechatUsersCountResult" type="com.dshl.bigdata.web.entity.DmWechatUsersCount">
+			<result property="createDate" column="createDate" />
+			<result property="addQuantity" column="addQuantity" />
+			<result property="cancelQuantity" column="cancelQuantity" />
+			<result property="totalQuantity" column="totalQuantity" />
+	</resultMap>
+	<select id="getWechatUsersByDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			SELECT count(*)c
+			FROM dm_wechat_users_count
+			<where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  order_date  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  order_date  &lt;= #{param.endDate}
+				</if>
+			</where>
+            GROUP BY createDate 
+		)t
+		
+	</select>
+	<select id="getWechatUsersByDate" parameterType="java.util.Map" resultMap="DmWechatUsersCountResult">
+		SELECT
+		 createDate,
+		 SUM(addQuantity) addQuantity,
+		 SUM(cancelQuantity) cancelQuantity,
+		 totalQuantity
+		FROM dm_wechat_users_count
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  order_date  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  order_date  &lt;= #{param.endDate}
+			</if>
+		</where>
+         GROUP BY createDate 
+         ORDER BY createDate desc limit #{param.pager.start},#{param.pager.pageSize};
+	</select>
+	
+</mapper>

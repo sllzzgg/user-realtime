@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+<#include "/menu/header.html"/>
+<#include "/menu/menu.html"/>
+<section class="content">
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>缺货率统计</h1>
+				<h2>wechat statistics</h2>
+				
+			</hgroup>
+		</header>
+		<div class="search_content">
+			<div class="field-wrap1">
+				<form action="product-stockout" method="post">
+					<#include "/menu/search.html"/>
+               </form>
+            </div>
+		</div>
+		<div class="content">
+			<div id="container2"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+		</div>
+	</section>
+	
+	<!-- 缺货率走势 -->	
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>商品走趋</h1>
+				<h2>wechat statistics</h2>
+			</hgroup>
+		</header>
+		<div class="content">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+		</div>
+		</div>
+	</section>
+	
+	
+	<!-- 缺货率统计 -->
+	<section class="widget">
+			<header>
+				<span class="icon">&#128196;</span>
+				<hgroup>
+					<h1>缺货率分析</h1>
+					<h2>shopping mall order statistics</h2>
+				</hgroup>
+			</header>
+		<div id="main" class="content">
+		  <#include "product-stockout-iframe.html"/>
+		</div>
+	</section>
+	
+</section>
+<#include "/menu/meta.html"/>
+
+<script type="text/javascript">
+$(function(){
+	var depotId="${condtion.depotId}";
+	$("#depotId").val(depotId);
+});
+</script>
+
+<script type="text/javascript">
+	$(function(){
+		var startDate =$("#startDate").val();
+		var endDate =$("#endDate").val();
+		var depotId =$("#depotId").val();
+		
+		$(".bt_blue").live("click",function(){
+			$("#main").load($(this).attr("ajaxUrl")+"depotId="+depotId+"&startDate="+startDate+"&endDate="+endDate);
+		});
+	});
+</script>
+
+<script type="text/javascript">
+$(function () {
+	
+    var createDate = '${addDate}'.split(",");
+    var onlineQuantity = '${onlineQuantity}'.split(",");
+    var lackQuantity = '${lackQuantity}'.split(",");
+    var stopQuantity = '${stopQuantity}'.split(",");
+    var lackQuantityRate = '${lackQuantityRate}'.split(",");
+    var arrayObj = new Array();
+    var onlineQuantityArr = new Array();
+    var lackQuantityArr = new Array();
+    var stopQuantityArr = new Array();
+    var lackQuantityRateArr = new Array();
+    for(var i=0;i<onlineQuantity.length;i++){
+    	onlineQuantityArr.push(parseInt(onlineQuantity[i]));
+		
+	 }
+    for(var i=0;i<lackQuantity.length;i++){
+    	lackQuantityArr.push(parseInt(lackQuantity[i]));
+	 }
+    for(var i=stopQuantity.length-1;i>=0;i--){
+    	stopQuantityArr.push(parseInt(stopQuantity[i]));
+	 }
+    for(var i=0;i<lackQuantityRate.length;i++){
+    	lackQuantityRateArr.push(parseInt(lackQuantityRate[i]));
+	 }
+    console.log(lackQuantityRateArr);
+    $('#container').highcharts({
+        title: {
+            text: '商品缺货分析',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: createDate
+        },
+        yAxis: {
+            title: {
+                text: '个数 '
+            },
+            tickInterval:1, // 刻度值
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '在售商品',
+            data:  onlineQuantityArr
+        },{
+            name: '缺货商品',
+            data:  lackQuantityArr
+        },
+        {
+            name: '停售商品',
+            data:  stopQuantityArr
+        }]
+    });
+    
+    $('#container2').highcharts({
+        title: {
+            text: '商品缺货率统计',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: createDate
+        },
+        yAxis: {
+            title: {
+                text: '100%'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: ''
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '缺货率',
+            data:  lackQuantityRateArr
+        }]
+    });
+
+});
+</script>
+</body>
+</html>

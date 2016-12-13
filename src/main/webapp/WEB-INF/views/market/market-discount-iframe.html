@@ -1,0 +1,31 @@
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+		<thead>
+			<tr>
+				<td>时间</td>
+				<td>订单数</td>
+				<td>订单总金额</td>
+				<td>折扣总金额</td>
+				<td>折扣比例</td>
+			</tr>
+		</thead>
+		<tbody>
+			<#list orderDiscountList as orderDiscount>
+			<tr>
+				<#if condtion.dateRad=='0'>
+					<td>${orderDiscount.createDate?string("yyyy-MM-dd")}</td>
+				</#if>
+				<#if condtion.dateRad=='1'>
+					<td>${orderDiscount.createDate?string("yyyy年MM月")}</td>
+				</#if>
+				<td>${orderDiscount.orderCount!'0'}</td>
+				<td>${orderDiscount.orderAmount!'0'}</td>
+				<td>${orderDiscount.discountAmount!'0'}</td>
+				<td>${orderDiscount.discountScale!''}</td>
+			</tr>
+			</#list>
+		</tbody>
+		<td></td>
+		<td><@cont.pager pagerInfo = pagerInfo url ="discount-iframe"/></td>	
+	</table>

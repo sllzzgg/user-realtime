@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopOrdersCountDao">
+	<resultMap id="DmDailyShopOrdersCountResult" type="com.dshl.bigdata.web.entity.DmDailyShopOrdersCount">
+			<result property="orderDate" column="order_date" />
+			<result property="orderQuantity" column="orderQuantity" />
+			<result property="orderAmount" column="orderAmount" />
+			<result property="cancelOrderQuantity" column="cancelOrderQuantity" />
+			<result property="cancelOrderAmount" column="cancelOrderAmount" />
+			<result property="backOrderQuantity" column="backOrderQuantity" />
+			<result property="backOrderAmount" column="backOrderAmount" />
+			<result property="returnOrderQuantity" column="returnOrderQuantity" />
+			<result property="returnOrderAmount" column="returnOrderAmount" />
+			<result property="depotid" column="depotid" />
+	</resultMap>
+	<select id="getByOrderDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM(
+			SELECT count(*)c
+			from `dm_daily_shop_orders_count`
+			<where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  order_date  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  order_date  &lt;= #{param.endDate}
+				</if>
+				<if test="param.depotId != null and param.depotId !=''">
+				   and  depotId  = #{param.depotId}
+				</if>
+			</where>
+			group by order_date 
+		)t
+	</select>
+	<select id="getByOrderDate" parameterType="java.util.Map" resultMap="DmDailyShopOrdersCountResult">
+		select
+			order_date,
+			sum(orderAmount) orderAmount, 
+			sum(orderQuantity) orderQuantity ,
+			sum(cancelOrderAmount) cancelOrderAmount,
+			sum(cancelOrderQuantity) cancelOrderQuantity
+		from `dm_daily_shop_orders_count`
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  order_date  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  order_date  &lt;= #{param.endDate}
+			</if>
+			<if test="param.depotId != null and param.depotId !=''">
+			   and  depotId  = #{param.depotId}
+			</if>
+		</where>
+		group by order_date 
+		order by order_date desc  limit #{param.pager.start},#{param.pager.pageSize}
+	</select>
+	
+	<!-- 平均客单价数量 -->
+	<select id="getOrderAverageByDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM(
+			SELECT count(*)c
+			from `dm_daily_shop_orders_count`
+			<where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  order_date  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  order_date  &lt;= #{param.endDate}
+				</if>
+				<if test="param.depotId != null and param.depotId !=''">
+				   and  depotId  = #{param.depotId}
+				</if>
+			</where>
+			group by 
+				<if test='param.dateRad == "0"'>order_date</if>
+				<if test='param.dateRad == "1"'>DATE_FORMAT(order_date,'%Y-%m')</if>
+		)t
+	</select>
+	
+	<!-- 平均客单价 -->
+	<select id="getOrderAverageByDate" parameterType="java.util.Map" resultMap="DmDailyShopOrdersCountResult">
+		select
+			order_date,
+			sum(orderAmount) orderAmount, 
+			sum(orderQuantity) orderQuantity ,
+			sum(cancelOrderAmount) cancelOrderAmount,
+			sum(cancelOrderQuantity) cancelOrderQuantity
+		from `dm_daily_shop_orders_count`
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  order_date  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  order_date  &lt;= #{param.endDate}
+			</if>
+			<if test="param.depotId != null and param.depotId !=''">
+			   and  depotId  = #{param.depotId}
+			</if>
+		</where>
+		group by 
+			<if test='param.dateRad == "0"'>order_date </if>
+			<if test='param.dateRad == "1"'>DATE_FORMAT(order_date,'%Y-%m')</if>
+		order by order_date desc  limit #{param.pager.start},#{param.pager.pageSize}
+	</select>
+	
+	
+	
+</mapper>

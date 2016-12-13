@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmAccountUsersCountDao">
+	<resultMap id="DmAccountUsersCountResult" type="com.dshl.bigdata.web.entity.DmAccountUsersCount">
+			<result property="createDate" column="createDate" />
+			<result property="totalCount" column="totalCount" />
+			<result property="registerCount" column="registerCount" />
+			<result property="freezeCount" column="freeze_count" />
+			<result property="activateCount" column="activateCount" />
+			<result property="regionCityId" column="regionCityId" />
+			<result property="sourceType" column="sourceType" />
+	</resultMap>
+	<select id="getByDate" parameterType="java.util.Map" resultType="Integer">
+		select
+		sum(registerCount) registerCount
+		from `dm_account_users_count`
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  createDate  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  createDate  &lt;= #{param.endDate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findDmAccountUsersCount" resultMap="DmAccountUsersCountResult">
+		SELECT sum(registerCount) registerCount,sourceType from dm_account_users_count GROUP BY sourceType
+	</select>
+	
+	
+	<!-- 按日查询注册商户数量 -->
+	<select id="findDmAccountUsersCount2" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			SELECT count(*)c
+			FROM dm_account_users_count 
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  createDate  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  createDate  &lt;= #{param.endDate}
+			</if>
+			<if test="param.regionCityId != null and param.regionCityId !=''">
+			   and  regionCityId = #{param.regionCityId}
+			</if>
+		</where>
+		GROUP BY createDate
+		)t
+	</select>
+	
+	<!-- 按日查询商户注册数据 -->
+	<select id="findDmAccountUsers" resultMap="DmAccountUsersCountResult">
+		SELECT  createDate,
+			 SUM(registerCount) registerCount,
+			 SUM(totalCount) totalCount,
+			 SUM(freeze_count) freeze_count,
+			 SUM(activateCount) activateCount
+		from dm_account_users_count 
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  createDate  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  createDate  &lt;= #{param.endDate}
+			</if>
+			<if test="param.regionCityId != null and param.regionCityId !=''">
+			   and  regionCityId = #{param.regionCityId}
+			</if>
+		</where>
+		GROUP BY createDate
+		ORDER BY createDate DESC limit #{param.pager.start},#{param.pager.pageSize} 
+	</select>
+	
+	<!-- 按月查询注册商户 -->
+	<select id="findDmAccountUsersByMonth" resultMap="DmAccountUsersCountResult">
+		SELECT  createDate,
+			 SUM(registerCount) registerCount,
+			 SUM(totalCount) totalCount,
+			 SUM(freeze_count) freeze_count,
+			 SUM(activateCount) activateCount
+		from dm_account_users_count 
+		<where>
+			1=1
+			<if test="param.dateMap.startYear !=null and param.dateMap.startYear !=''">
+				and year(createDate) &gt;= #{param.dateMap.startYear}
+			</if>
+			<if test="param.dateMap.endYear !=null and param.dateMap.endYear !=''">
+				and year(createDate) &lt;= #{param.dateMap.endYear}
+			</if>
+			<if test="param.dateMap.startMonth !=null and param.dateMap.startMonth !=''">
+				and month(createDate) &gt;= #{param.dateMap.startMonth}
+			</if>
+			<if test="param.dateMap.endMonth !=null and param.dateMap.endMonth !=''">
+				and month(createDate) &lt;= #{param.dateMap.endMonth}
+			</if>
+			<if test="param.cityId !=null and param.cityId !=''">
+				and regionCityId = #{param.cityId}
+			</if>
+		</where>
+		GROUP BY month(createDate), year(createDate)
+		ORDER BY createDate DESC limit #{param.pager.start},#{param.pager.pageSize} 
+	</select>
+	
+	<!-- 按月查询注册商户数量 -->
+	<select id="findDmAccountUsersCountByMonth" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			SELECT count(*)c
+			FROM dm_account_users_count 
+		<where>
+		    1=1
+			<if test="param.dateMap.startYear !=null and param.dateMap.startYear !=''">
+				and year(createDate) &gt;= #{param.dateMap.startYear}
+			</if>
+			<if test="param.dateMap.endYear !=null and param.dateMap.endYear !=''">
+				and year(createDate) &lt;= #{param.dateMap.endYear}
+			</if>
+			<if test="param.dateMap.startMonth !=null and param.dateMap.startMonth !=''">
+				and month(createDate) &gt;= #{param.dateMap.startMonth}
+			</if>
+			<if test="param.dateMap.endMonth !=null and param.dateMap.endMonth !=''">
+				and month(createDate) &lt;= #{param.dateMap.endMonth}
+			</if>
+			<if test="param.cityId !=null and param.cityId !=''">
+				and regionCityId = #{param.cityId}
+			</if>
+		</where>
+		GROUP BY month(createDate), year(createDate)
+		)t
+	</select>
+	
+</mapper>

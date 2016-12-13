@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+<#include "/menu/header.html"/>
+ <#include "/menu/menu.html"/>
+
+<section class="alert">
+	<div class="green" >	
+		<p align="center"  >欢 迎 使 用 大 数 据 BI 系 统</p>
+		<span class="close">&#10006;</span>
+	</div>
+</section>
+<section class="content" style="margin-top: 50px;">
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>商城订单统计</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+			<aside>
+				<button class="left-btn">&#59229;</button><button class="right-btn">&#59230;</button>
+			</aside>
+		</header>
+		<div class="content cycle">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+			<div id="flot-example-1" class="graph-area">
+			<div id="container2"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+		</div>
+	</section>
+	
+	
+	<div class="widget-container">
+		<section class="widget small">
+			<header> 
+				<span class="icon">&#128318;</span>
+				<hgroup>
+					<h1>昨日数据</h1>
+					<h2>Yesterday </h2>
+				</hgroup>
+			</header>
+			<div class="content">
+				<section class="stats-wrapper">
+					<div class="stats">
+						<p><span>${ordercount.orderQuantity}</span></p>
+						<p>昨日下单数</p>
+					</div>
+					<div class="stats">
+						<p><span>${ordercount.orderAmount}</span></p>
+						<p>昨日下总金额</p>
+					</div>
+				</section>
+				<section class="stats-wrapper">
+					<div class="stats">
+						<p><span>${sum_register}</span></p>
+						<p>昨日用户注册数</p>
+					</div>
+					<div class="stats">
+						<p><span>${totalUsers}</span></p>
+						<p>累记用户数</p>
+					</div>
+				</section>
+			</div>
+		</section>
+		
+		<section class="widget small">
+			<header> 
+				<span class="icon">&#9716;</span>
+				<hgroup>
+					<h1>用户来源比例</h1>
+					<h2>User source rate</h2>
+				</hgroup>
+			</header>
+			<div class="content">
+				<div class="pie graph-area" id="pie">
+				
+				</div>
+			</div>
+		</section>
+	</div>
+</section>
+<#include "/menu/meta.html"/>
+<script type="text/javascript">
+// Feature slider for graphs
+ $('.cycle').cycle({
+	fx: "scrollHorz",
+	timeout: 0,
+    slideResize: 0,
+    prev:    '.left-btn', 
+    next:    '.right-btn'
+}); 
+</script>
+<script type="text/javascript">
+$(function () {
+	
+	 var orderdate = '${orderdate}'.split(",");
+	 var orderQuantity = '${orderQuantity}'.split(",");
+	 var orderamout = '${orderamout}'.split(",");
+	 var cancelorderQuantity = '${cancelorderQuantity}'.split(",");
+	 var arrayObj = new Array();
+	 var cancelArr = new Array();
+	 var quantityArr = new Array();
+	 for(var i=0;i<orderamout.length;i++){
+		 arrayObj.push(parseInt(orderamout[i]));
+	 }
+	 
+	 for(var i=0;i<cancelorderQuantity.length;i++){
+		 cancelArr.push(parseInt(cancelorderQuantity[i]));
+	 }
+	 for(var i=0;i<orderQuantity.length;i++){
+		 quantityArr.push(parseInt(orderQuantity[i]));
+	 }
+	 console.log(orderamout)
+    $('#container').highcharts({
+        title: {
+            text: '销售金额周统计',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: orderdate
+        },
+        yAxis: {
+            title: {
+                text: '金额 (￥)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '￥'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '下单金额',
+            data:  arrayObj
+        }, {
+            name: '取消金额',
+            data: cancelArr
+        }]
+    });
+	 
+	 
+	 $('#container2').highcharts({
+	        title: {
+	            text: '销量周统计',
+	            x: -20 //center
+	        },
+	        subtitle: {
+	            text: '',
+	            x: -20
+	        },
+	        xAxis: {
+	            categories: orderdate
+	        },
+	        yAxis: {
+	            title: {
+	                text: '订单数量 (个)'
+	            },
+	            plotLines: [{
+	                value: 0,
+	                width: 1,
+	                color: '#808080'
+	            }]
+	        },
+	        tooltip: {
+	            valueSuffix: '个'
+	        },
+	        legend: {
+	            layout: 'vertical',
+	            align: 'right',
+	            verticalAlign: 'middle',
+	            borderWidth: 0
+	        },
+	        series: [{
+	            name: '下单数量',
+	            data:  quantityArr
+	        }]
+	    });
+	 
+	 var piejson = '${piejson}';
+     var piejsonObj = JSON.parse(piejson);
+	 $('#pie').highcharts({
+	        chart: {
+	            type: 'pie',
+	            plotBackgroundColor: null,
+	            plotBorderWidth: null,
+	            plotShadow: false
+	        },
+	        title: {
+	            text: '商户注册来源比例分布'
+	        },
+	        plotOptions: {
+	        	pie: {
+	                allowPointSelect: true,
+	                cursor: 'pointer',
+	                dataLabels: {
+	                    enabled: true,
+	                    format: '<b>{point.name}({point.y})</b>: {point.percentage:.1f} %',
+	                    style: {
+	                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+	                    }
+	                }
+	            }
+	        },
+
+	        tooltip: {
+	            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+	            pointFormat: '<span style="color:{point.color}">{point.name}</span>:{point.y}<br/>'
+	        },
+	        series: [{
+	            name: '比例统计',
+	            colorByPoint: true,
+	            data: piejsonObj
+	        }]
+	    });
+});
+
+</script>
+</body>
+</html>

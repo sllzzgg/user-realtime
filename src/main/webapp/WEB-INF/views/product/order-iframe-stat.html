@@ -1,0 +1,31 @@
+<meta charset="utf-8">
+<title>店商互联大数据BI系统</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="" />
+<meta name="viewport"
+	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="css/style2.css" media="all" />
+<#import "/menu/macro_controller.html" as cont/>
+<table id="myTable" border="0" width="50%">
+					<thead>
+						<tr>
+							
+							<th>订单编号</th>
+							<th>下单时间</th>
+							<th>商量销量</th>
+							<th>销售金额</th>
+						</tr>
+					</thead>
+					<tbody>
+						<#list items as item>
+						<tr height="27">
+							<td>${item.orderCode}</td>
+							<td>${item.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
+							<td>${item.quantity}</td>
+							<td>${item.sellPrice!"0"}元</td>
+						</tr>
+						</#list>
+					</tbody>
+						<td><@cont.pager pagerInfo = pagerInfo targetId="order" url ="order/"+productId+"/"+shipId+"/"+buyId/></td> 
+				</table>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dshl.bigdata.web.dao.KeyWordDao" >
+  <resultMap id="BaseResultMap" type="com.dshl.bigdata.web.entity.KeyWord" >
+    <result column="searchDate" property="searchdate" jdbcType="VARCHAR" />
+    <result column="userId" property="userid" jdbcType="INTEGER" />
+    <result column="keyword" property="keyword" jdbcType="VARCHAR" />
+    <result column="searchCount" property="searchcount" jdbcType="INTEGER" />
+    <result column="sumNum" property="sumNum" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="selectGroupByKeyWord" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+   SELECT SUM(tkw.searchCount) as sumNum,tkw.keyword from t_keyword tkw GROUP BY tkw.keyword ORDER BY sumNum desc  LIMIT 5
+  </select>
+  
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+   SELECT SUM(tkw.searchCount) as sumNum from t_keyword tkw 
+  </select>
+  
+  <select id="selectCountByDate" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+   SELECT COALESCE(SUM(tkw.searchCount),0) as sumNum from t_keyword tkw  WHERE tkw.searchDate = date(NOW()) 
+  </select>
+  
+  <select id="getKeyWordByDate" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT 
+		searchDate,
+		keyword,
+		SUM(searchCount) searchCount
+		 from t_keyword
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  order_date  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  order_date  &lt;= #{param1.endDate}
+			</if>
+		</where>
+        GROUP BY keyword,searchDate
+		Order BY searchCount desc limit 10
+	</select>
+	
+  
+  <insert id="insert" parameterType="com.dshl.bigdata.web.entity.KeyWord" >
+    insert into t_keyword (searchDate, userId, keyword, 
+      searchCount)
+    values (#{searchdate,jdbcType=VARCHAR}, #{userid,jdbcType=INTEGER}, #{keyword,jdbcType=VARCHAR}, 
+      #{searchcount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dshl.bigdata.web.entity.KeyWord" >
+    insert into t_keyword
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="searchdate != null" >
+        searchDate,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="keyword != null" >
+        keyword,
+      </if>
+      <if test="searchcount != null" >
+        searchCount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="searchdate != null" >
+        #{searchdate,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="keyword != null" >
+        #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="searchcount != null" >
+        #{searchcount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>

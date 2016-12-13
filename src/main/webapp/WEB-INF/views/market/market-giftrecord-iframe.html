@@ -1,0 +1,30 @@
+<meta charset="utf-8">
+<title>店商互联大数据BI系统</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="" />
+<meta name="viewport"
+	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="css/style2.css" media="all" />
+	<#import "/menu/macro_controller.html" as cont/>
+				<table id="myTable" border="0" width="100">
+					<thead>
+						<tr>
+							<th >商品名称</th>
+							<th>赠送数量</th>
+							<th>参与客户数</th>
+							<th>销售额</th>
+						</tr>
+					</thead>
+					<tbody>
+						<#list result as giftrecord>
+						<tr height="27">
+							<td>${giftrecord.title}</td>
+							<td>${giftrecord.totalCount}</td>
+							<td>${giftrecord.countUser}</td>
+							<td>${giftrecord.totalAmount}</td>
+						</tr>
+						</#list>
+					</tbody>
+						<td><@cont.pager pagerInfo = pagerInfo url ="giftrecord-iframe"/></td>
+				</table>

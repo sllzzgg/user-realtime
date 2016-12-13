@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.UserLoginDao">
+	<resultMap id="userLoginMap" type="com.dshl.bigdata.web.entity.User">
+		<result column="id" property="userId"/>
+		<result column="name" property="userName"/>
+		<result column="password" property="password"/>
+		<result column="role_id" property="roleId"/>
+		<result column="role_name" property="roleName"/>
+	</resultMap>
+	
+	<!-- 检验用户登录 -->
+	<select id="getUserByUserName" parameterType="java.lang.String" resultMap="userLoginMap">
+		SELECT id, userName ,password ,role_id ,role_name
+		FROM user_role
+		WHERE userName=#{userName}
+		 
+	</select>
+</mapper>
+	
+	

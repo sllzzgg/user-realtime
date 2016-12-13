@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+<meta charset="utf-8">
+<title>店商互联大数据BI系统</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="" />
+<meta name="viewport"
+content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="css/style2.css" media="all" />
+<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+
+<style>
+html{background-color:#E3E3E3; font-size:14px; color:#000; font-family:'微软雅黑'}
+a,a:hover{ text-decoration:none;}
+pre{font-family:'微软雅黑'}
+.box{padding:20px; background-color:#fff; margin:50px 100px; border-radius:5px;}
+.box a{padding-right:15px;}
+#about_hide{display:none}
+.layer_text{background-color:#fff; padding:20px;}
+.layer_text p{margin-bottom: 10px; text-indent: 2em; line-height: 23px;}
+.button{display:inline-block; *display:inline; *zoom:1; line-height:30px; padding:0 20px; background-color:#56B4DC; color:#fff; font-size:14px; border-radius:3px; cursor:pointer; font-weight:normal;}
+.photos-demo img{width:200px;}
+</style>
+</head>
+<body>
+	<#include "/menu/header.html"/> 
+	<#include "/menu/menu.html"/>
+	<section class="content">
+		<section class="widget">
+			<header>
+				<span class="icon">&#128196;</span>
+				<hgroup>
+					<h1>订单统计</h1>
+					<h2>order statistics</h2>
+
+				</hgroup>
+			</header>
+			<meta charset="utf-8">
+			<div class="search_content">
+				<div class="field-wrap1">
+					<form action="product-order-flow" method="post">
+						仓库： <select class="cs-select cs-skin-border" id="depotId" name="depotId">
+							<option value="0" >全部</option>
+							<option value="56">西三旗仓</option>
+							<option value="57" >十八里店仓</option>
+							<option value="58" >苏州仓</option>
+							<option value="59" >深圳仓</option>
+							<option value="60" >杭州仓</option>
+							<option value="61" >常州仓</option>
+							<option value="62" >重庆仓</option>
+							<option value="63" >无锡仓</option>
+							<option value="64" >天津仓</option>
+							<option value="65" >武汉仓</option>
+							<option value="66" >宁波仓</option>
+							<option value="68" >顺义仓</option>
+							<option value="69" >东莞仓</option>
+							<option value="101" >青岛仓</option>
+							<option value="102" >广州仓</option>
+							<option value="104" >成都仓</option>
+							<option value="105" >南通仓</option>
+							<option value="107" >南京仓</option>
+						</select> &nbsp;&nbsp;
+						时间： <input value="${condtion.startDate!''}" id='startDate'
+							type="text" class="Wdate" name="startDate"
+							onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">-
+						<input value="${condtion.endDate!''}" type="text" class="Wdate"
+							name="endDate" id='endDate'
+							onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">&nbsp;&nbsp;&nbsp;
+							
+                    <input name="SearchCondition" checked="checked" id="radioBtnSearchBrand" value="1" type="radio">
+                    <label for="radioBtnSearchBrand"> 品牌</label>&nbsp;&nbsp;&nbsp;
+                    
+                    <input name="SearchCondition" id="radioBtnSearchSku" value="2" type="radio">
+                    <label for="radioBtnSearchSku"> 商品编码</label>&nbsp;&nbsp;&nbsp;
+                        
+                        <!-- 按商品品牌搜索 -->
+                        <select  class="cs-select cs-skin-border" id="brandId" name="brandId" >
+                       		<option value="0" >全部</option>
+                       	   	 <#list shopBrandList as shopBrand> 
+                       		<option value="${shopBrand.brandId!}">${shopBrand.brandName!}</option>
+                        	</#list>
+                        </select>
+                       <!-- 按商品编号搜索 -->
+                     	<input style="display:none" id="productSku" name="productSku" placeholder="请输入商品编号"
+                     	value="${condtion.productSku!}"   />
+						<button type="submit"  class="cs-select cs-skin-border" id="">搜索</button>
+					</form>
+				</div>
+			</div>
+			<div class="content" >
+					
+				<table 
+					class="borderkuang tabChart" width="100%" cellspacing="1"
+					cellpadding="0" border="0">
+					<tbody>
+						<tr>
+							<td style="padding-left: 20px; line-height: 100%" width="100%">
+								<div  id='main'><#include "product-order-flow-iframe.html"/></div>
+							</td>
+							<td style="padding-left: 20px; line-height: 100%" width="50%" id="ship_content"></td>
+						</tr>
+						
+						<tr>
+							<td style="padding-left: 20px; line-height: 100% ;padding-top:15px;" width="50%" id="user_content"></td>
+							
+							<td style="padding-left: 20px; line-height: 100% ;padding-top:15px;" width="50%" id="order_content"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</section>
+	<#include "/menu/meta.html"/>
+<script type="text/javascript">
+$(function(){
+	var depotId = "${condtion.depotId}";
+	$("#depotId").val(depotId);
+	
+	var brandId="${condtion.brandId}";
+	$("#brandId").val(brandId);
+	
+	//弹框展示地图	
+	//页面一打开就执行，放入ready是为了layer所需配件（css、扩展模块）加载完毕
+	layer.ready(function(){ 
+		$(".map").live("click",function(){
+		var paramId=$(this).attr("paramId");
+		  	layer.open({
+			    type: 2,
+			    title: '销量地图展示',
+			    fix: false,
+			    maxmin: true,
+			    shadeClose: true,
+			    area: ['1120px', '610px'],
+			    content: "detail/"+paramId
+			  
+		  	});
+	  	});
+	});
+});
+</script>
+<script type="text/javascript">
+	// Feature slider for graphs
+	$('.cycle').cycle({
+		fx : "scrollHorz",
+		timeout : 0,
+		slideResize : 0,
+		prev : '.left-btn',
+		next : '.right-btn'
+	});
+
+	$(function(){
+		$("#radioBtnSearchBrand").click(function(){
+			$("#productSku").hide();
+			$("#brandId").show();
+			$("#productSku").val('');
+		})
+		$("#radioBtnSearchSku").click(function(){
+			$("#brandId").hide();
+			$("#productSku").show();
+			$("#brandId").val('');
+		})
+		if($("#productSku").val()!=""){
+			$("#radioBtnSearchSku").trigger("click");
+		}
+		
+	});
+
+	//加载查看信息
+	$(function(){
+		$('.a_t').live("click",function(){
+			var $this = $(this);
+			var paramId = $this.attr('paramId');
+			var uri = $this.attr('url');
+			var targetId = $this.attr('targetId');
+			console.log(uri == 'ship');
+			if(uri == 'ship'){
+				/* $('#user_content').html('');
+				
+				$('#order_content').html(''); */
+			} 
+		
+			if(uri == 'user'){
+				/* $('#order_content').html(''); */
+			} 
+			var depotId = $('#depotId').val();
+			var startDate = $('#startDate').val();
+			var endDate = $('#endDate').val();
+			
+			 $.ajax({  
+				 type: 'post',      
+				 url: uri+"/"+paramId,  
+				 data: { "depotId": depotId,"startDate":startDate,"endDate":endDate }, 
+				 success:function(data){  
+					$("#"+targetId).html(data).animate({
+						    width:'50%;'
+					},"show");
+				 }  
+			 });  
+		});
+	});
+</script>
+<script type="text/javascript">
+	//分页
+    $(function(){
+    	var startDate = $('#startDate').val();
+    	var endDate = $('#endDate').val();
+    	var brandId=$("#brandId").val();
+    	var depotId=$("#depotId").val();
+    	//分页load 
+        $('.bt_blue').live('click',function(){
+        	var url =$(this).attr('id');
+        	if(url=='item'){
+	        	$("#main").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate+'&brandId='+brandId+"&depotId="+depotId);
+        	}
+        	if(url=="ship"){
+	        	$("#ship_content").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate+'&brandId='+brandId+"&depotId="+depotId);
+        	}
+        	if(url=="user"){
+	        	$("#user_content").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate+'&brandId='+brandId+"&depotId="+depotId);
+        	}
+        	if(url=="order"){
+	        	$("#order_content").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate+'&brandId='+brandId+"&depotId="+depotId);
+        	}
+        })
+    });
+</script>
+</body>
+</html>

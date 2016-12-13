@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyOrderGiftrecordDao">
+	<select id="getGiftrecord" parameterType="java.util.Map" resultType="com.dshl.bigdata.web.entity.Giftrecord">
+		SELECT title as "title" , totalCount as "totalCount" , totalAmount as "totalAmount" , countUser as "countUser"
+		FROM `shop_giftrecord`
+		<where>
+			1=1
+			<if test="param.startDate != null and param.startDate != ''">
+				and addDate &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate != ''">
+				and addDate &lt;= #{param.endDate}
+			</if>
+		</where>
+		ORDER BY totalcount DESC limit #{param.pager.start} , #{param.pager.pageSize}
+	</select>
+	<select id="getGiftrecordCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(*) 
+		FROM `shop_giftrecord`
+		<where>
+			1=1
+			<if test="param.startDate != null and param.startDate != ''">
+				and addDate &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate != ''">
+				and addDate &lt;= #{param.endDate}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,27 @@
+<meta charset="utf-8">
+<#import "/menu/macro_controller.html" as cont/>
+<table id="myTable" border="0" width="50%">
+	<thead>
+		<tr>
+			<th>商品名称</th>
+			<th>商品销量</th>
+			<th>销售金额</th>
+			<th>订单数</th>
+			<th>查看流向</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+		<#list items as item>
+		<tr height="27">
+			<td>${item.name}</td>
+			<td>${item.quantity}</td>
+			<td>${item.sellPrice * item.quantity}元</td>
+			<td>${item.orderCount!"0"}</td>
+			<td><a href="javascript:;" class="map" paramId="${item.sku}">地图</a></td>
+			<td><a href='javascript:void(0)' paramId="${item.productId}" class="a_t" targetId="ship_content" url='ship' >查看</td>
+		</tr>
+		</#list>
+	</tbody>
+		<td><@cont.pager pagerInfo = pagerInfo targetId="item" url ="product-order-flow-iframe"/></td>
+</table>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联-系统登录</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body class="login">
+	<section>
+		<h1 style="color:white;">BI系统用户登录</h1>
+		<div id="error">
+			<#if error?? && error?length gt 0>
+				<h1 style="color:white;">${error}</h1>
+			</#if>
+		</div>
+		<form method="link"  action="loginCheck">
+			<input  type="text" placeholder="请输入用户名" name="userName" />
+			<input  type="password" placeholder="请输入密码" name="password"/>
+			<button id="loginform" class="blue">登陆</button>
+		</form>
+	</section>
+<script src="js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$('input').each(function() {
+	
+	       $(this).focus(function(){
+	            $("#error").hide();  
+	       });
+		});
+	});
+	
+	$(function(){
+		document.onkeydown = function(e){
+		    var ev = document.all ? window.event : e;
+		    if(ev.keyCode==13) {
+		           $('#loginform').trigger("click");
+		     }
+		}
+	});
+</script>
+</body>
+</html>

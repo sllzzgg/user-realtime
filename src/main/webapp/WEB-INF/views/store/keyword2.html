@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>Retina Dashboard</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" href="../../css/style2.css" />
+		<link rel="icon" href="http://img.hcharts.cn/static/highcharts/images/favicon.ico">
+		<title>搜索词</title>
+		<link rel="stylesheet" href="../../js/Highcharts_files/style.css">
+		<script src="../../js/Highcharts_files/modernizr.js"></script>
+		<!-- <script src="../../js/Highcharts_files/iframeWidget.js" charset="UTF-8"></script> -->
+		<style>
+		.hfont{
+		    color:#333;
+		    width:16%;
+		    height:80px; 
+		    background-color:#FFF4FF;
+		    display:inline-block;
+		    margin-left:1%;
+		    float:left;
+		    margin-top:20px;
+		    padding:10px;
+		    word-break:break-all;
+		    min-width:200px;
+		}
+		.hfont font{ font-size:24px; display:block; line-height:45px;color:#f60;}
+		html,body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,img,div,dl,dt,dd{
+		  margin:0;padding:0;border:0;font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif;}
+		i,em{font-style:normal;}
+		ul,ol{list-style:none;}
+		.topInfo{ width:235px; padding:15px; background-color:#404a5a; border:1px solid #9b9b9c; position:absolute; top:200px; right:30px; overflow:hidden; z-index:99999;}
+		.topInfo h2{ font-weight:normal; height:30px; line-height:30px; font-size:14px; color:#fff;}
+		.topInfo ul{ background-image:url(../../images/top_bg.png); background-repeat:no-repeat; background-position:0px 7px; margin-top:10px;}
+		.topInfo ul li{ font-weight:normal; height:35px; line-height:35px; font-size:14px; color:#fff; padding-left:45px;overflow:hidden; width:190px; font-size:14px;}
+		.info1{ width:50%; height:35px;box-sizing:border-box; float:left;  overflow:hidden;}
+		.info2{ width:35%; height:35px;box-sizing:border-box;float:right; overflow:hidden;}
+		
+		</style>
+	</head>
+<body>
+<div class="testing">
+<header class="main">
+	<h1><strong>店商互联BI</strong> Dashboard</h1>
+	<input type="text" value="search" />
+</header>
+
+</div>
+<nav>
+	<ul>
+		<li class="section"><a href="index.html"><span class="icon">&#128711;</span> Dashboard</a></li>
+		<li>
+			<a href="table"><span class="icon">&#128196;</span> Pages</a>
+			<ul class="submenu">
+				<li><a href="page-new.html">Create page</a></li>
+				<li><a href="page-timeline.html">View pages</a></li>
+			</ul>	
+		</li>
+		<li>
+			<a href="chart"><span class="icon">&#127748;</span> Media <span class="pip">7</span></a>
+			<ul class="submenu">
+				<li><a href="files-upload.html">Upload file</a></li>
+				<li><a href="files.html">View files</a></li>
+			</ul>
+		</li>
+		<li>
+			<a href="blog-timeline.html"><span class="icon">&#59160;</span> Blog <span class="pip">12</span></a>
+			<ul class="submenu">
+				<li><a href="blog-new.html">New post</a></li>
+				<li><a href="blog-table.html">All posts</a></li>
+				<li><a href="comments-timeline.html">View comments</a></li>
+			</ul>
+		</li>
+		<li><a href="chart"><span class="icon">&#128202;</span> Statistics</a></li>
+		<li><a href="store/shopUsers/keyWord"><span class="icon">&#128202;</span> 关键字统计</a></li>
+		<li><a href="users.html"><span class="icon">&#128101;</span> Users <span class="pip">3</span></a></li>
+		<li>
+			<a href="ui-elements.html"><span class="icon">&#9881;</span> UI Elements</a>
+			<ul class="submenu">
+				<li><a href="icon-fonts.html">Icon fonts</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+
+	
+<div class="widget-container" id="app">
+	
+			<div class="topInfo">
+    	<h2>Top5全国搜索词</h2>
+        <ul id="keyInfo">
+        <#list keyWords as keyWord>
+			<li key="${keyWord.keyword}"> 
+				<#if keyWord.keyword?length gt 5>
+					<div class="info1">${keyWord.keyword?substring(0,5)}</div> 
+				<#else>
+					<div class="info1">${keyWord.keyword}</div>
+				</#if>
+				<div class="info2">${keyWord.sumNum?c}</div>
+				</li>
+		</#list>
+		<div class="clear:both;"></div>
+        </ul>
+    </div>
+			
+			<div>
+					<span class="hfont">累计访问量<font id="keyWord1">${keyWordCnt?c}</font></span><span class="hfont">累计用户数 <font id="keyWord2"> ${userCnt?c}</font></span><span class="hfont">今日访问次数<font id="keyWord3">${keyWordDateCnt}</font></span>
+			<div style="clear:both;"></div>
+			</div>
+			<div id="highmaps-demo-box" >
+				
+                <div class="col-xs-12 box-container" style="padding-top:20px">
+                    <div data-highcharts-chart="1" class="demo-frame-container">
+						<div style="position: relative; overflow: hidden; width: 1225px; height: 860px; text-align: left; line-height: normal; z-index: 0; left: 0.5px; top: 0px;" id="highcharts-2" class="highcharts-container"></div>
+				</div>
+			</div>	
+		
+</div>
+ <script src="../../js/Highcharts_files/plugins.js"></script>
+
+ <!--  <script src="../../js/Highcharts_files/wb.js" type="text/javascript" charset="utf-8"></script> -->
+
+  
+  <script src="../../js/Highcharts_files/index.js"></script>
+</body>
+</html>

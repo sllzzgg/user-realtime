@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopOrderCouponDao">
+	<resultMap type="com.dshl.bigdata.web.entity.ShopCoupon" id="ShopOrderCoupon">
+		<result column="title" property="title"/>
+		<result column="couponType" property="couponType"/>
+		<result column="price" property="price"/>
+		<result column="sendCount" property="sendCount"/>
+		<result column="usedCount" property="usedCount"/>
+		<result column="rangeType" property="rangeType"/>
+		<result column="status" property="status"/>
+		<result column="remainNum" property="remainNum"/>
+		<result column="couponPlat" property="couponPlat"/>
+	</resultMap>
+	
+	<!-- 优惠券的总数量 -->
+	<select id="getCouponCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT COUNT(1) 
+		FROM `shop_coupon`
+		<where>
+			1=1
+			<if test="param.startDate != null and param.startDate != ''">
+				and updateTime &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate != ''">
+				and updateTime &lt;= #{param.endDate}
+			</if>
+			<if test="param.couponType != null and param.couponType != ''">
+				and couponType = #{param.couponType}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 优惠券 -->
+	<select id="getCoupon" parameterType="java.util.Map" resultMap="ShopOrderCoupon">
+		SELECT * 
+		FROM `shop_coupon`
+		<where>
+			1=1
+			<if test="param.startDate != null and param.startDate != ''">
+				and updateTime &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate != ''">
+				and updateTime &lt;= #{param.endDate}
+			</if>
+			<if test="param.couponType != null and param.couponType != ''">
+				and couponType = #{param.couponType}
+			</if>
+		</where>
+		order by updateTime desc limit #{start} , #{size};
+	</select> 
+	
+</mapper>

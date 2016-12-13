@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.ShopOrderItemDao">
+	<resultMap id="ShopOrderItemResult" type="com.dshl.bigdata.web.entity.ShopOrderItem">
+			<result property="itemId" column="itemId" />
+			<result property="orderid" column="orderid" />
+			<result property="name" column="name" />
+			<result property="productId" column="productId" />
+			<result property="sellPrice" column="sellPrice" />
+			<result property="quantity" column="quantity" />
+			<result property="createdDate" column="createdDate" />
+			<result property="regionid" column="regionid" />
+			<result property="realshippingmodeid" column="realshippingmodeid" />
+			<result property="realshippingmodename" column="realshippingmodename" />
+			<result property="buyerid" column="buyerid" />
+			<result property="shipname" column="shipname" />
+			<result property="brandid" column="brandid" />
+			<result property="sku" column="sku" />
+			<result property="orderCode" column="ordercode"/> 
+			<result property="createTime" column="createTime"/>
+	</resultMap>
+	
+	<!-- 地图显示需要的数据 -->
+	<select id="getShopOrderMapDate" parameterType="java.util.Map" resultType="com.dshl.bigdata.web.entity.ShopOrderMapDate">
+		SELECT  soi.realshippingmodename as name, 
+				sr.longitude as longitude, 
+				sr.latitude as latitude,
+				count(*) as value
+		FROM shop_order_item soi
+		LEFT JOIN shop_regiondepot sr
+		ON soi.regionId=sr.regionId
+		WHERE soi.sku=#{param1.sku}
+		<if test="param1.startDate != null and param1.startDate !=''">
+			and  createdDate  &gt;= #{param1.startDate}
+		</if>
+		<if test="param1.endDate != null and param1.endDate !=''">
+		   and  createdDate  &lt;= #{param1.endDate}
+		</if>
+		<if test="param1.brandId != null and param1.brandId !=''">
+		   and  brandId= #{param1.brandId}
+		</if>
+		<if test="param1.depotId != null and param1.depotId !=''">
+			and  sr.depotId =#{param1.depotId}
+		</if>
+		GROUP BY realshippingmodename
+	</select>
+	<!-- 获取所有商品的品牌 -->
+	<select id="getAllShopBrand" resultType="com.dshl.bigdata.web.entity.ShopBrand">   
+		SELECT brandId , brandName
+        FROM shop_brand
+	</select>
+	
+	<select id="getShopOrderItems" parameterType="java.util.Map" resultMap="ShopOrderItemResult">
+		SELECT 
+			name,
+			productId,
+			sku,
+			 SUM(quantity) quantity, 
+			COUNT(DISTINCT orderid) orderCount,
+			sellPrice 
+			from shop_order_item soi
+			left join shop_regiondepot sr
+			on soi.regionId=sr.regionId
+		<where>
+		    1 =1 
+		    <if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  createdDate  &lt;= #{param1.endDate}
+			</if>
+			<if test="param1.sku != null and param1.sku !=''">
+			   and  sku = #{param1.sku}
+			</if>
+			<if test="param1.brandId != null and param1.brandId !=''">
+			   and  brandId= #{param1.brandId}
+			</if>
+			<if test="param1.depotId != null and param1.depotId !=''">
+				and  sr.depotId =#{param1.depotId}
+			</if>
+		</where>
+             GROUP BY name,productId  limit #{start},#{size};
+	</select>
+	<!-- 查询总的订单数 -->
+	<select id="getShopOrderItemsCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c) 
+		FROM (
+		  SELECT 
+			count(1) c
+			from shop_order_item soi
+			left join shop_regiondepot sr
+			on soi.regionId=sr.regionId 
+		<where>
+		    1 =1 
+		    <if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  createdDate  &lt;= #{param1.endDate}
+			</if>
+			<if test="param1.sku != null and param1.sku !=''">
+			   and  sku = #{param1.sku}
+			</if>
+			<if test="param1.brandId != null and param1.brandId !=''">
+			   and  brandId= #{param1.brandId}
+			</if>
+			<if test="param1.depotId != null and param1.depotId !=''">
+				and  sr.depotId =#{param1.depotId}
+			</if>
+		</where>
+             GROUP BY name,productId 
+             ) t
+	</select>
+	<!-- 指定商品的订单总数 -->
+	<select id="getShopOrderItemsCountByProductId" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM  (select count(*) c
+			  from shop_order_item
+			  <where>
+			    1 =1 
+				<if test="param1.startDate != null and param1.startDate !=''">
+				   and  createdDate  &gt;= #{param1.startDate}
+				</if>
+				<if test="param1.endDate != null and param1.endDate !=''">
+				   and  createdDate  &lt;= #{param1.endDate}
+				</if>
+				<if test="param1.sku != null and param1.sku !=''">
+				   and  sku = #{param1.sku}
+				</if>
+				<if test="param1.brandId != null and param1.brandId !=''">
+				   and  brandId= #{param1.brandId}
+				</if>
+				<if test="param1.productId != null and param1.productId !=''">
+				   and  productId= #{param1.productId}
+				</if>
+			 </where>
+			  group by realshippingmodeid,realshippingmodename
+			) t
+	</select>
+	
+	
+	
+	<select id="getShopOrderItemsByProductId" parameterType="java.util.Map" resultMap="ShopOrderItemResult">
+		SELECT 
+			 realshippingmodeid, 
+			 realshippingmodename,
+			 SUM(quantity) quantity, 
+			COUNT(DISTINCT orderid) orderCount,
+			sellPrice 
+			from shop_order_item
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  createdDate  &lt;= #{param1.endDate}
+			</if>
+			<if test="param1.sku != null and param1.sku !=''">
+			   and  sku = #{param1.sku}
+			</if>
+			<if test="param1.brandId != null and param1.brandId !=''">
+			   and  brandId= #{param1.brandId}
+			</if>
+			<if test="param1.productId != null and param1.productId !=''">
+			   and  productId= #{param1.productId}
+			</if>
+		</where>
+             GROUP BY  realshippingmodeid,realshippingmodename  limit #{start},#{size};
+	</select>
+	
+	
+		
+	<!-- 指定商品指定配送站的商品总数 -->
+	<select id="getShopOrderItemsCountByShipId" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			select count(1) c
+			from shop_order_item
+			<where>
+				1=1
+				<if test="param1.startDate != null and param1.startDate !=''">
+			       and  createdDate  &gt;= #{param1.startDate}
+				</if>
+				<if test="param1.endDate != null and param1.endDate !=''">
+				   and  createdDate  &lt;= #{param1.endDate}
+				</if>
+				<if test="param1.sku != null and param1.sku !=''">
+				   and  sku = #{param1.sku}
+				</if>
+				<if test="param1.brandId != null and param1.brandId !=''">
+				   and  brandId= #{param1.brandId}
+				</if>
+				<if test="param1.shipId != null and param1.shipId !=''">
+				   and  realshippingmodeid= #{param1.shipId}
+				</if>
+				<if test="param1.productId != null and param1.productId !=''">
+				   and  productId= #{param1.productId}
+				</if>
+			</where>
+			group by buyerid,shipname
+		) t
+	</select>
+	<select id="getShopOrderItemsByShipId" parameterType="java.util.Map" resultMap="ShopOrderItemResult">
+		SELECT 
+			 buyerid, 
+			 shipname,
+			 SUM(quantity) quantity, 
+			COUNT(DISTINCT orderid) orderCount,
+			sellPrice 
+			from shop_order_item
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  createdDate  &lt;= #{param1.endDate}
+			</if>
+			<if test="param1.sku != null and param1.sku !=''">
+			   and  sku = #{param1.sku}
+			</if>
+			<if test="param1.brandId != null and param1.brandId !=''">
+			   and  brandId= #{param1.brandId}
+			</if>
+			<if test="param1.shipId != null and param1.shipId !=''">
+			   and  realshippingmodeid= #{param1.shipId}
+			</if>
+			<if test="param1.productId != null and param1.productId !=''">
+			   and  productId= #{param1.productId}
+			</if>
+		</where>
+           GROUP BY buyerid,shipname  limit #{start},#{size};
+	</select>
+	
+	<!-- 通过制定用户获取订单总数 -->
+	<select id="getShopOrderItemsCountByUserId" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			select count(1) c
+			from shop_order_item
+			<where>
+				1=1
+				<if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+				</if>
+				<if test="param1.endDate != null and param1.endDate !=''">
+				   and  createdDate  &lt;= #{param1.endDate}
+				</if>
+				<if test="param1.sku != null and param1.sku !=''">
+				   and  sku = #{param1.sku}
+				</if>
+				<if test="param1.brandId != null and param1.brandId !=''">
+				   and  brandId= #{param1.brandId}
+				</if>
+				<if test="param1.buyId != null and param1.buyId!=''">
+				   and  buyerid= #{param1.buyId}
+				</if>
+				<if test="param1.productId != null and param1.productId !=''">
+				   and  productId= #{param1.productId}
+				</if>
+				<if test="param1.shipId != null and param1.shipId !=''">
+				   and  realshippingmodeid= #{param1.shipId}
+				</if>
+			</where>
+           		GROUP BY createdDate
+			) t
+		
+		
+	</select>
+	<select id="getShopOrderItemsByUserId" parameterType="java.util.Map" resultMap="ShopOrderItemResult">
+		
+		SELECT 
+			 createdDate,
+			 createTime,
+			 ordercode,
+			 SUM(quantity) quantity, 
+			COUNT(DISTINCT orderid) orderCount,
+			sellPrice 
+			from shop_order_item
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  createdDate  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  createdDate  &lt;= #{param1.endDate}
+			</if>
+			<if test="param1.sku != null and param1.sku !=''">
+			   and  sku = #{param1.sku}
+			</if>
+			<if test="param1.brandId != null and param1.brandId !=''">
+			   and  brandId= #{param1.brandId}
+			</if>
+			<if test="param1.buyId != null and param1.buyId!=''">
+			   and  buyerid= #{param1.buyId}
+			</if>
+			<if test="param1.productId != null and param1.productId !=''">
+			   and  productId= #{param1.productId}
+			</if>
+			<if test="param1.shipId != null and param1.shipId !=''">
+			   and  realshippingmodeid= #{param1.shipId}
+			</if>
+		</where>
+           GROUP BY createdDate LIMIT #{start},#{size} ;
+	</select>
+</mapper>

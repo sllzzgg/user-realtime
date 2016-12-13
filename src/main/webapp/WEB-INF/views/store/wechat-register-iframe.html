@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+		<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >时间 </th>
+						<th>新增关注人数 </th>
+						<th>取消关注人数</th>
+						<th>累积关注人数 </th>
+					</tr>
+				</thead>
+				<tbody>
+				 <#list users as user>
+					<tr>  
+						<td>${user.createDate?string("yyyy-MM-dd")}</td>
+						<td>${user.addQuantity!"0"}</td>
+						<td>${user.cancelQuantity!"0"}</td>
+						<td>${user.totalQuantity!"0"}</td>
+					</tr>
+				</#list>	
+				</tbody>
+				<td><@cont.pager pagerInfo = pagerInfo url ="wechat-iframe"/></td>
+				
+			</table>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopProductsDao">
+	<resultMap id="DmDailyShopProductsResult" type="com.dshl.bigdata.web.entity.DmDailyShopProducts">
+			<result property="orderDate" column="order_date" />
+			<result property="sku" column="sku" />
+			<result property="productName" column="productName" />
+			<result property="totalQuantity" column="totalQuantity" />
+			<result property="sellPrice" column="sellPrice" />
+			<result property="totalAmount" column="totalAmount" />
+			<result property="depotId" column="depot_id" />
+	</resultMap>
+	<select id="getProductByDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			SELECT count(*)c 
+			FROM dm_daily_shop_products
+			<where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  order_date  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  order_date  &lt;= #{param.endDate}
+				</if>
+				 <if test="param.depotId != null and param.depotId !=''">
+					   and  depot_id = #{param.depotId}
+				</if>
+			</where>
+            GROUP BY  sku , productName
+		)t
+		
+	</select>
+	<select id="getProductByDate" parameterType="java.util.Map" resultMap="DmDailyShopProductsResult">
+		SELECT 
+		sku,productName,SUM(totalAmount) as totalAmount ,sum(totalQuantity) as totalQuantity 
+		from dm_daily_shop_products 
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  order_date  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  order_date  &lt;= #{param1.endDate}
+			</if>
+			<if test="param1.depotId != null and param1.depotId !=''">
+			   and  depot_id = #{param1.depotId}
+			</if>
+		</where>
+           GROUP BY sku ,productName 
+           ORDER BY totalAmount desc  limit #{param1.pager.start},#{param1.pager.pageSize}
+	</select>
+	
+</mapper>

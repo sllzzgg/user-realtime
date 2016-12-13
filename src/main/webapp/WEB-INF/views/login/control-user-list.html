@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+	<#import "macro_controller.html" as cont/>
+</head>
+<body>
+	<#include "/menu/header.html"/>
+	<#include "/menu/menu.html"/>
+		<section class="content " >
+			<section class="widget" style="height: 900px;">
+				<header>
+					<span class="icon">&#128196;</span>
+					<hgroup>
+						
+						<h1>用户列表</h1>
+						<h2>shopping mall order statistics</h2>
+					</hgroup>
+				</header>
+				<div>
+				<table id="myTable" border="0" width="100">
+					<head>
+						<tr>
+							<td>用户名</td>
+							<td>角色名称</td>
+							<td>更新</td>
+							<td>操作</td>
+						</tr>
+					</head>
+					<tbody>
+						<#list userList as user>
+							<tr>
+								<td>${user.userName}</td>	
+								<td>${user.roleName}</td>	
+								<td><button href="javaScript:;">修改</button></td>	
+								<td><button href="javaScript:;">删除</button></td>	
+							</tr>
+						</#list>
+					</tbody>
+					<td><@cont.pager pagerInfo = pagerInfo url ="category-table-iframe"/></td>
+				</table>
+			</div>
+		</section>
+		
+	</section>
+	<#include "meta.html"/>
+</body>
+</html>
+	

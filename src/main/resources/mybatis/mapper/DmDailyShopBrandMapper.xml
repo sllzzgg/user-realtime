@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopBrandDao">
+	<resultMap id="DmDailyShopBrandResult" type="com.dshl.bigdata.web.entity.DmDailyShopBrand">
+			<result property="orderDate" column="order_date" />
+			<result property="brandId" column="brand_id" />
+			<result property="brandName" column="brand_name" />
+			<result property="depotId" column="depot_id" />
+			<result property="orderCount" column="order_count" />
+			<result property="orderaMount" column="ordera_mount" />
+	</resultMap>
+	<select id="getByOrderDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			SELECT count(*)c
+			FROM dm_daily_shop_brand
+			<where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  order_date  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  order_date  &lt;= #{param.endDate}
+				</if>
+			 	<if test="param.depotId != null and param.depotId !=''">
+				   and  depot_id = #{param.depotId}
+				</if>
+			</where>
+			group by brand_name 
+		)t
+	
+	</select>
+		
+	
+	
+	<select id="getByOrderDate" parameterType="java.util.Map" resultMap="DmDailyShopBrandResult">
+		select
+		`brand_name` ,sum(ordera_mount) as ordera_mount,sum(order_count) as order_count
+		from `dm_daily_shop_brand`
+		<where>
+		    1 =1 
+			<if test="param1.startDate != null and param1.startDate !=''">
+			   and  order_date  &gt;= #{param1.startDate}
+			</if>
+			<if test="param1.endDate != null and param1.endDate !=''">
+			   and  order_date  &lt;= #{param1.endDate}
+			</if>
+		 <if test="param1.depotId != null and param1.depotId !=''">
+			   and  depot_id = #{param1.depotId}
+			</if>
+		</where>
+		group by brand_name 
+		order by sum(ordera_mount)  desc limit #{param1.pager.start},#{param1.pager.pageSize}
+	</select>
+	
+</mapper>

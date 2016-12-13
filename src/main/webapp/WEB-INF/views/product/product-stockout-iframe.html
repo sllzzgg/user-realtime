@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+ <table id="myTable" border="0" width="100">
+			<thead>
+				<tr>
+					<th >时间 </th>
+					<th>在售商品数 </th>
+					<th>缺货商品数</th>
+					<th>停售商品数 </th>
+					<th>缺货率  </th>
+				</tr>
+			</thead>
+				<tbody>
+					<#list statis as stat>
+						<tr>  
+							<td>${stat.addDate!''}</td>
+							<td>${stat.onlineQuantity!"0"}</td>
+							<td>${stat.lackQuantity!"0"}</td>
+							<td>${stat.stopQuantity!"0"}</td>
+							<td>${stat.lackQuantityRate*100!"0"}%</td>
+						</tr>
+					</#list>	
+				</tbody>
+				<td></td>
+				<td><@cont.pager pagerInfo = pagerInfo url ="product-stockout-iframe"/></td>
+			</table>

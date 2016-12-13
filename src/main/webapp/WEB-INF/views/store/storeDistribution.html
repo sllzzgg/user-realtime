@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+body, html, #allmap {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	margin: 0;
+	font-family: "微软雅黑";
+}
+div,ul,li{ list-style:none; paddding:0; margin:0;}
+#l-map {
+	height: 100%;
+	width: 78%;
+	float: left;
+	border-right: 2px solid #bcbcbc;
+}
+
+#r-result {
+	height: 100%;
+	width: 20%;
+	float: left;
+}
+
+.BMapLib_bubble_content {
+	height: auto!important;
+}
+html,body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,img,div,dl,dt,dd{
+		  margin:0;padding:0;border:0;font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif;}
+		i,em{font-style:normal;}
+		ul,ol{list-style:none;}
+		a{outline: none;text-decoration: none;color:#666666; cursor:pointer;}
+		a:active, a:focus { outline:none;}
+		a,button,input{-webkit-tap-highlight-color:rgba(255,0,0,0);}
+
+		.InfoBar{
+			height: 34px; overflow: hidden; background-color: #FFFFFF; border:1px solid #d7d7d7; width:650px; margin:0 auto;}		
+		.InfoBar a{
+			float: left; }
+		.InfoBar a::after,.InfoBar ul::after { 
+			content: ""; display: block; clear: both; font-size: 0; line-height: 0; height: 0; vertical-align: middle; *zoom: 1; }
+		.InfoBar a img{
+			width:142px; height:34px;float: left; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width:}
+			
+		.InfoBar a span.order_form{	float: left;line-height: 34px;color: #FF9900;font-size: 16px;}	
+		
+		.InfoBar ul {  height: 40px; float: left; }
+		.InfoBar ul li { line-height: 34px; padding-right: 13px; }
+		.InfoBar ul li a { line-height: 34px; font-size: 16px; color: #FF9900; overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+			 -webkit-line-clamp: 1; -webkit-box-orient: vertical; word-wrap: break-word; word-break: break-all; padding-left: 30px;padding-right: 5px; }		
+		.InfoBar ul li a font{padding-right: 16px;}
+		.InfoBar ul li a i{padding-right: 12px;}
+
+</style>
+<script type="text/javascript"
+	src="http://api.map.baidu.com/api?v=2.0&ak=wKvsdipnIOb6b3mRLa7DNXN2"></script>
+<script type="text/javascript"
+	href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"></script>
+<script type="text/javascript"
+	src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+<script type="text/javascript" src="../../js/jquery-1.7.1.min.js"></script>
+<title>商户分布</title>
+</head>
+
+<body>
+	<div style="height:50px; background-color:#F7F7F7; padding-top:15px; text-align:center;">
+	<div style="position:absolute; top:20px; left:20px;">
+	<span style="float:left; margin-left:20px; font-size:20px;">城市：</span>
+		<select  style="width:119px;font-size:20px; float:left; margin-left:5px;" id="sel" onChange="chg()">
+			<option value="643">北京市</option>
+			<option value="285">苏州市</option>
+			<option value="1972">深圳市</option>
+			<option value="101">杭州市</option>
+			<option value="276">常州市</option>
+			<option value="3088">重庆市</option>
+			<option value="252">无锡市</option>
+			<option value="664">天津市</option>
+			<option value="1530">武汉市</option>
+			<option value="116">宁波市</option>
+			<option value="2088">东莞市</option>
+			<option value="1165">青岛市</option>
+			<option value="1945">广州市</option>
+			<option value="3131">成都市</option>
+			<option value="300">南通市</option>
+			<option value="237">南京市</option>
+		</select>
+		</div>
+		<div class="InfoBar">
+		<a href="javascript:void(0);"><img src="../../images/speaker.png"></a>
+        <ul>
+            <li id="orderinfo"><a href="#" ><font id="city"></font><i id="nickname"></i><em id="cntMoney"></em></a></li>
+            
+        </ul> 
+        <div style="clear:both;"></div>
+	</div>
+	</div>
+	<div id="allmap"></div>
+	<script type="text/javascript">
+        function AutoScroll(obj) {          
+            $(obj).find("ul:first").animate({               
+                marginTop: "-30px"
+            }, 1000,'linear',function () {
+                $(this).css({ marginTop: "0" }).find("li:first").appendTo(this);                
+            });
+        }
+        $(document).ready(function () {
+            var myar = setInterval('AutoScroll(".InfoBar")', 5000);        
+        });
+    </script> 
+    
+    
+</body>
+
+</html>
+
+<script type="text/javascript">
+	var ws;
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");
+	var point = new BMap.Point(116.404, 39.915);
+	var points = [];
+	map.centerAndZoom(point, 12);
+
+	var top_left_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_LEFT});// 左上角，添加比例尺
+	var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
+	//var top_right_navigation = new BMap.NavigationControl({anchor: BMAP_ANCHOR_TOP_RIGHT, type: BMAP_NAVIGATION_CONTROL_SMALL});
+	map.addControl(top_left_control);
+	map.addControl(top_left_navigation);
+	var imageSrc = "http://app.baidu.com/map/images/tiananmen.jpg";
+	// 随机向地图添加25个标注
+	/* var bounds = map.getBounds();
+	var sw = bounds.getSouthWest();
+	var ne = bounds.getNorthEast();
+	var lngSpan = Math.abs(sw.lng - ne.lng);
+	var latSpan = Math.abs(ne.lat - sw.lat);
+	for (var i = 0; i < 25; i++) {
+		var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7),
+				ne.lat - latSpan * (Math.random() * 0.7));
+		addMarker(point);
+	} */
+	
+	var keyword = "", //检索关键词
+	page = 0, //当前页码
+	points = [], //存储检索出来的结果的坐标数组
+	customLayer = null; //麻点图层
+	customLayer = new BMap.CustomLayer({
+		geotableId: 78563,
+		q: '', //检索关键字
+		tags: '', //空格分隔的多字符串
+		filter: '', //过滤条件,参考http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
+		pointDensityType: BMAP_POINT_DENSITY_HIGH
+	}); //新建麻点图图层对象
+	map.addTileLayer(customLayer); //将麻点图添加到地图当中
+	/*****初始化云麻点图层结束**********/
+	
+	/*****给麻点图添加点击麻点回调函数开始************/
+	customLayer.addEventListener('hotspotclick', hotspotclickCallback);
+	
+	function hotspotclickCallback(e) {
+		var customPoi = e.customPoi,
+			str = [];
+		var customPoi = e.customPoi;//poi的默认字段
+		//var contentPoi=e.content;//poi的自定义字段
+		var point = new BMap.Point(customPoi.point.lng, customPoi.point.lat);
+		var sContent = "<div><h4 style='margin:0 0 5px 0;padding:0.2em 0'>" + customPoi.title + "</h4>" + "<img style='float:right;margin:4px' id='imgDemo' src='http://app.baidu.com/map/images/tiananmen.jpg' width='139' height='104'/>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>地址:" + customPoi.address + "</p></br><p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>电话:" + e.content.phone + "</p>" + "</div>";
+		var opts = {
+			      width: 400,
+
+			      height:0
+			}
+		var infoWindow = new BMap.InfoWindow(sContent,opts); // 创建信息窗口对象
+		map.openInfoWindow(infoWindow,point);
+		
+		/* if (e.content.shopPhoto === "NULL") {
+			e.content.shopPhoto = "http://app.baidu.com/map/images/tiananmen.jpg";
+		}
+		str.push("address = " + customPoi.address);
+		str.push("phoneNumber = " + (customPoi.userName || customPoi.phone));
+		var content = '<img src="' + (e.content.shopPhoto) || imageSrc + '"style="width:111px;height:83px;float:left;margin-right:5px;"/>' + '<p style="width:280px;margin:0;line-height:20px;">地址：' + customPoi.address + '</p>';
+		content += '<p style="width:280px;margin:0;line-height:20px;">电话：' + (e.content.userName || e.content.phone) + '</p>';
+		//创建检索信息窗口对象
+		var searchInfoWindow = new BMapLib.SearchInfoWindow(map, content, {
+			title: e.content.title, //标题
+			width: 290, //宽度
+			height: 40, //高度
+			enableAutoPan: true, //自动平移
+			enableSendToPhone: true, //是否显示发送到手机按钮
+			searchTypes: [
+				BMAPLIB_TAB_SEARCH, //周边检索
+				BMAPLIB_TAB_TO_HERE, //到这里去
+				BMAPLIB_TAB_FROM_HERE //从这里出发
+			]
+		});
+		var point = new BMap.Point(customPoi.point.lng, customPoi.point.lat);
+		searchInfoWindow.open(point); //打开信息窗口 */
+	}
+	$(function() {
+		//启动websocket
+		//ws = new WebSocket("ws://192.168.2.247:8080/user-realtime/websocket");
+		ws = new WebSocket("ws://localhost:8080/user-realtime/websocket");
+		ws.onopen = function(evn) {
+			console.log(evn);
+		};
+		ws.onmessage = function(evn) {
+			var result = eval('(' + evn.data + ')');
+			var userId = result.userId;
+			var amount = result.orderAmount;
+			if (evn.data != 1) {
+				//燃放烟花
+				fireworks(userId,amount);
+			}
+			
+		};
+		ws.onclose = function() {
+			console.log("关闭");
+		};
+		//加载数据渲染页面
+		//loadMarker();
+	});
+	
+	function chg(){
+		
+		var cityName = $("#sel option:selected").text();
+		
+		map.centerAndZoom(cityName, 12);
+	}
+	
+	function loadMarker() {
+		var aj = $.ajax({
+				url: '../../store/shopUsers/serach', // 跳转到 action   
+				type: 'post',
+				cache: false,
+				dataType: 'json',
+				success: function(data) {
+					if (data.success) {
+						//map添加marker
+						/* var length = data.data.length;
+						if(length > 1000){
+							length = 1000;
+						}
+						for (var i = 0; i < length; i++) {
+							var records = data.data[i];
+							addMarker(records);
+						} */
+						renderMap(data,1);
+					} else {
+						alert(data.msg);
+					}
+				},
+				error: function() {
+					// view("异常！");  
+					alert("异常！");
+				}
+			});
+	}
+	// 编写自定义函数,创建标注
+	/* function addMarker(records){
+		var marPoint = new BMap.Point(records.longitude, records.latitude);
+		var marker = new BMap.Marker(marPoint);
+		//鼠标悬浮时显示的数据
+		var label = new BMap.Label(records.nickname, {
+			offset: new BMap.Size(20, -10)
+		});
+		label.setStyle({
+			display: "none" //给label设置样式，任意的CSS都是可以的
+		});
+		marker.setLabel(label);
+		marker.addEventListener("mouseover",function() {
+					label.setStyle({ //给label设置样式，任意的CSS都是可以的
+						display: "block"
+			});
+		//鼠标点击的时候 触发事件
+		var sContent = "<div> <h4 style='margin:0 0 5px 0;padding:0.2em 0'>" + records.nickname + "</h4>" + "<img style='float:right;margin:4px' id='imgDemo' src='http://app.baidu.com/map/images/tiananmen.jpg' width='139' height='104'/>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>地址:" + records.address + "</p><p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>电话:" + records.phone + "/p" + "</div>";
+		var infoWindow = new BMap.InfoWindow(sContent); // 创建信息窗口对象
+		marker.addEventListener("click",function() {
+					this.openInfoWindow(infoWindow);
+					//图片加载完毕重绘infowindow
+					document.getElementById('imgDemo').onload = function() {
+										infoWindow.redraw(); //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+									}
+					});
+		});
+		marker.addEventListener("mouseout", function() {
+			label.setStyle({ //给label设置样式，任意的CSS都是可以的
+				display: "none"
+			});
+		});
+		map.addOverlay(marker);
+	} */
+	
+	/**
+	 * 渲染地图模式
+	 * @param result
+	 * @param page
+	 */
+	function renderMap(res, page, highlight) {
+		var content = res.data;
+		//$('#mapInfoUl').html('');
+		map.clearOverlays();
+		points.length = 0;
+
+		/* if (!content || content.length == 0) {
+			$('#mapInfoUl').append($('<p style="border-top:1px solid #DDDDDD;padding-top:10px;text-align:center;text-align:center;" class="text-warning">抱歉，没有找到您想要的信息，请重新查询</p>'));
+			return;
+		} */
+		var markerIcon = "js/madian.png";
+		var myIcon = new BMap.Icon(markerIcon, new BMap.Size(10, 20), {
+			offset: new BMap.Size(1, 2)
+		});
+
+		$.each(content, function(i, item) {
+
+			var point = new BMap.Point(item.longitude, item.latitude),
+				marker = new BMap.Marker(point);
+			if (!highlight) {
+				marker.setIcon(myIcon);
+			}
+
+			points.push(point);
+			var li = $("<li><p>商户：" + window.decodeURI(item.nickname || item.nickname) + "</p><p>电话：" + item.phone + "</p></li>").click(showInfo);
+			//$('#mapInfoUl').append(li);
+			marker.addEventListener('click', showInfo);
+
+			function showInfo() {
+				var contentInfo = "<img src='http://app.baidu.com/map/images/tiananmen.jpg' style='width:111px;height:83px;float:left;margin-right:5px;'/>" +
+					"<p>地址：" + window.decodeURI(item.address) + "</p>" +
+					"<p>电话：" + item.phone + "</p>";
+					
+				//创建检索信息窗口对象
+				var searchInfoWindow = new BMapLib.SearchInfoWindow(map, contentInfo, {
+					title: window.decodeURI(item.nickname || item.nickname), //标题
+					width: 290, //宽度
+					panel: "panel", //检索结果面板
+					enableAutoPan: true //自动平移
+
+				});
+				searchInfoWindow.open(marker);
+			};
+			map.addOverlay(marker);
+		});
+
+		map.setViewport(points);
+	}; 
+	
+	function fireworks(userId,amount){
+		$.ajax({
+			url: '../../store/shopUsers/serachById', // 跳转到 action   
+			type: 'post',
+			cache: false,
+			data:{userId:userId},
+			dataType: 'json',
+			success: function(data) {
+				if (data.success) {
+					var conent = data.data;
+					var info = "<a href=\"#\" ><font>"+conent.city+"</font><i>"+conent.nickname+"</i>下单金额<em>"+amount+"</em>元</a>";
+					$("#orderinfo").html(info);
+					console.log(conent.longitude+"-"+conent.latitude);
+					var point1 = new BMap.Point(conent.longitude, conent.latitude);
+					
+					//var pt = new BMap.Point(point1);
+					var myIcon = new BMap.Icon("../../images/fireworks.gif", new BMap.Size(
+						300, 157));
+					var marker2 = new BMap.Marker(point1, {
+						icon: myIcon
+					}); // 创建标注
+					map.addOverlay(marker2);
+					setTimeout(function() {
+						map.removeOverlay(marker2);
+					}, 30000)
+				} else {
+					console.debug(data.msg);
+				}
+			},
+			error: function() {
+				// view("异常！");  
+				//alert("异常！");
+			}
+		});
+	}
+</script>

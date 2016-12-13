@@ -1,0 +1,42 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+
+<#--分页-->
+<#macro pager pagerInfo  targetId="" url="">
+	<#if pagerInfo.rowsCount &gt; 0>
+		<th colspan="10"  align="center">
+		
+			<!-- 创建一个totalPage对象    获取总的页数 -->
+			<#assign totalPage=freemarkerUtil.calTotalPage(pagerInfo.rowsCount,pagerInfo.pageSize)> 
+			
+				<#if pagerInfo.pageIndex &gt; 1>
+					<a class="bt bt_blue" id="${targetId}" href="javascript:void(0);return false;" ajaxUrl="${url}?pindex=1&">首页</a>
+				</#if>&nbsp;&nbsp;&nbsp;
+			
+			 	<!-- 上一页 -->
+				<#if pagerInfo.pageIndex &gt; 1>
+					<a class="bt bt_blue" id="${targetId}" href="javascript:void(0);return false;" ajaxUrl="${url}?pindex=${(pagerInfo.pageIndex - 1)!}&">上一页</a>
+				<#else>
+					<a class="bt bt_gray" href="javascript:void(0);return false;">已首页</a>
+				</#if>&nbsp;&nbsp;&nbsp;
+				
+				<!-- 当前页/总页数 -->
+				${pagerInfo.pageIndex} / ${totalPage}&nbsp;&nbsp;&nbsp;
+				
+				<!-- 总记录数 -->
+				共 ${pagerInfo.rowsCount} 条 数 据&nbsp;&nbsp;&nbsp;
+				
+				<!-- 下一页 -->
+				<#if pagerInfo.pageIndex &lt; totalPage>
+					<a class="bt bt_blue" id="${targetId}" href="javascript:void(0);" ajaxUrl="${url}?pindex=${(pagerInfo.pageIndex + 1)!}&">下一页</a>
+				<#else>
+					<a class="bt bt_gray" href="javascript:void(0);return false;">已末 页</a>&nbsp;&nbsp;&nbsp;
+				</#if>&nbsp;&nbsp;&nbsp;
+				
+				<#if pagerInfo.pageIndex &lt; totalPage>
+					<a class="bt bt_blue" id="${targetId}" href="javascript:void(0);" ajaxUrl="${url}?pindex=${totalPage!}&">末 页</a>
+				</#if>&nbsp;&nbsp;&nbsp;
+		</th>
+	</#if>
+</#macro>
+

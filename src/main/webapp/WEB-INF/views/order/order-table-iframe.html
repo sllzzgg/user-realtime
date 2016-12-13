@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >时间</th>
+						<th>订单数</th>
+						<th>销售额</th>
+						<th>取消单数</th>
+						<th>取消金额</th>
+						<th>回库单数</th>
+						<th>回库金额</th>
+						<th>退货单数</th>
+						<th>退货金额 </th>
+						<th>合计单数</th>
+						<th>合计金额 </th>
+					</tr>
+				</thead>
+					<tbody>
+					 <#list orders as order>
+						<tr>
+							<td>${order.orderDate?string("yyyy-MM-dd")} </td>
+							<td>${order.orderQuantity!"0"}</td>
+							<td>${order.orderAmount!"0"}元</td>
+							<td>${order.cancelOrderQuantity!"0"}</td>
+							<td>${order.cancelOrderAmount!"0"}元</td>
+							<td>${order.backOrderQuantity!"0"}</td>
+							<td>${order.backOrderAmount!"0"}元</td>
+							<td>${order.returnOrderQuantity!"0"}</td>
+							<td>${order.returnOrderAmount!"0"}元</td>
+							<td>${order.orderQuantity!"0"}</td>
+							<td>${order.orderAmount!"0"}元</td>
+						</tr>
+					</#list>	
+					</tbody>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td><@cont.pager pagerInfo = pagerInfo url ="order-table-iframe"/></td>
+				</table>

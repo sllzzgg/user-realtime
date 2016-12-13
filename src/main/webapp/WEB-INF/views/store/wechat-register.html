@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+<#include "/menu/header.html"/>
+<#include "/menu/menu.html"/>
+
+<section class="content">
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>累计微信商户关注统计</h1>
+				<h2>wechat statistics</h2>
+			</hgroup>
+		</header>
+		<div class="search_content">
+			<div class="field-wrap1">
+			<form action="flow" method="post">
+			&nbsp;&nbsp;时间：
+				<input value="${condtion.startDate!''}" type="text" class="Wdate" id="startDate" name="startDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">-
+				<input value="${condtion.endDate!''}" type="text" class="Wdate" id="endDate" name="endDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})" >
+				<button type="submit" class="">搜索</button> 
+               </form>
+			</div>
+		</div>
+		<div class="content cycle">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container2"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+		</div>
+	</section>
+		<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>当日微信商户关注统计</h1>
+				<h2>wechat statistics</h2>
+			</hgroup>
+		</header>
+		<div class="content cycle">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+			</div>
+		</div>
+	</section>
+	
+			<section class="widget">
+		<header>
+			<span class="icon">&#128196;</span>
+			<hgroup>
+				<h1>微信关注列表</h1>
+				<h2>wechat statistics</h2>
+			</hgroup>
+		</header>
+		<div id="main" class="content">
+			<#include "wechat-register-iframe.html"/>			
+		</div>
+	</section>
+	
+</section>
+<#include "/menu/meta.html"/>
+<script type="text/javascript">
+	//分页
+	$(function(){
+		var startDate = $("#startDate").val();
+		var endDate = $("#endDate").val();
+		var depotId = $("#depotId").val();
+		
+		$(".bt_blue").live("click", function(){
+			$("#main").load($(this).attr("ajaxUrl")+'startDate='+startDate+'&endDate='+endDate+'&depotId='+depotId);
+		});
+	});
+</script>
+<script type="text/javascript">
+// Feature slider for graphs
+ $('.cycle').cycle({
+	fx: "scrollHorz",
+	timeout: 0,
+    slideResize: 0,
+    prev:    '.left-btn', 
+    next:    '.right-btn'
+}); 
+</script>
+
+<script type="text/javascript">
+$(function () {
+	
+    var createDate = '${createDate}'.split(",");
+    var registerCount = '${addQuantity}'.split(",");
+    var cancelCount = '${cancelQuantity}'.split(",");
+    var totalCount = '${totalCount}'.split(",");
+    var arrayObj = new Array();
+    var registerCountArr = new Array();
+    var cancelCountArr = new Array();
+    var totalCountArr = new Array();
+    for(var i=0;i<registerCount.length;i++){
+    	registerCountArr.push(parseInt(registerCount[i]));
+		
+	 }
+    for(var i=0;i<cancelCount.length;i++){
+    	cancelCountArr.push(parseInt(cancelCount[i]));
+		
+	 }
+    for(var i=totalCount.length-1;i>=0;i--){
+    	totalCountArr.push(parseInt(totalCount[i]));
+		
+	 }
+  console.log(totalCountArr);
+    $('#container').highcharts({
+        title: {
+            text: '微信关注统计',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: createDate
+        },
+        yAxis: {
+            title: {
+                text: '个数 '
+            },
+            tickInterval:1, // 刻度值
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '新增关注个数',
+            data:  registerCountArr
+        },{
+            name: '取消关注个数',
+            data:  cancelCountArr
+        }]
+    });
+    
+    $('#container2').highcharts({
+        title: {
+            text: '微信商户累计关注数量',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: createDate
+        },
+        yAxis: {
+            title: {
+                text: '个数'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '￥'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '累计关注数',
+            data:  totalCountArr
+        }]
+    });
+
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+<#include "/menu/header.html"/>
+<#include "/menu/menu.html"/>
+<section class="content">
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>累计商户注册统计</h1>
+				<h2>category statistics</h2>
+			</hgroup>
+		</header>
+		<div class="search_content">
+			<div class="field-wrap1">
+				<form action="user-register" method="post">
+					城市：
+					<select class="cs-select cs-skin-border" id="cityId" name="cityId">
+					    <option  value="" >全部</option>
+						<option value="643">北京市</option>
+						<option value="101">杭州市</option>
+						<option value="1945">广州市</option>
+						<option value="1972">深圳市</option>
+						<option value="285">苏州市</option>
+						<option value="1165">青岛市</option>
+					</select>
+					&nbsp;&nbsp;时间：
+					<input value="${condtion.startDate!''}" type="text" class="Wdate" id="startDate" name="startDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">-
+					<input value="${condtion.endDate!''}" type="text" class="Wdate" id="endDate" name="endDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})" >
+					&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="day" name="dateRad" value="0" checked="checked"/><label for="day">日</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="month" name="dateRad" value="1"/><label for="month">月</label>
+					<button type="submit" class="">搜索</button> 
+                </form>
+			</div>
+			昨日新增注册人数：<input disabled="disabled" value="${sum_register!'0'}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+			累计注册人数：：<input disabled="disabled" value="${totalUsers}"/>
+		</div>
+		<div class="content cycle">
+				<div id="flot-example-2" class="graph-area">
+				   <div id="container2"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+				</div>
+			</div>
+	</section>
+	<!-- 新注册商户统计 -->	
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>新注册商户统计</h1>
+				<h2>shopping mall user statistics</h2>
+			</hgroup>
+		</header>
+		<div class="content cycle">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+			</div>
+		</div>
+	</section>
+	
+	<!-- 商户统计 -->
+	<section class="widget">
+		<header>
+			<span class="icon">&#128196;</span>
+			<hgroup>
+				<h1>商户统计</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+		</header>
+		<div id="main" class="content">
+			<#include "user-register-iframe.html"/>
+		</div>
+	</section>
+	
+</section>
+<#include "/menu/meta.html"/>
+
+<script type="text/javascript">
+$(function(){
+	var cityId = "${condtion.cityId!''}";
+	$("#cityId").val(cityId);
+	
+	var dateRad = "${condtion.dateRad!''}";
+	if(dateRad=='1'){
+		$("#month").attr("checked","checked");
+	};
+});
+
+$(function () {
+    var createDate = '${createDate}'.split(",");
+    var registerCount = '${registerCount}'.split(",");
+    var totalCount = '${totalCount}'.split(",");
+    var arrayObj = new Array();
+    var registerCountArr = new Array();
+    var totalCountArr = new Array();
+    console.log(totalCount);
+    for(var i=0;i<registerCount.length;i++){
+    	registerCountArr.push(parseInt(registerCount[i]));
+		
+	 }
+    for(var i=totalCount.length-1;i>=0;i--){
+    	totalCountArr.push(parseInt(totalCount[i]));
+		
+	 }
+  console.log(totalCountArr);
+    $('#container').highcharts({
+        title: {
+            text: '新注册个数统计',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: createDate
+        },
+        yAxis: {
+            title: {
+                text: '个数 '
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '注册个数',
+            data:  registerCountArr
+        }]
+    });
+    
+    $('#container2').highcharts({
+        title: {
+            text: '累计商户注册数量 ',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: createDate
+        },
+        yAxis: {
+            title: {
+                text: '个数'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '￥'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '累计数量',
+            data:  totalCountArr
+        }]
+    });
+
+});
+</script>
+<script type="text/javascript">
+	//分页
+	$(function(){
+		var startDate = $("#startDate").val();
+		var endDate = $("#endDate").val();
+		var cityId = $("#cityId").val();
+		var dateRad =$("input:checked").val();
+		
+		$(".bt_blue").live("click", function(){
+			$("#main").load($(this).attr("ajaxUrl")+'startDate='+startDate+'&endDate='+endDate+'&cityId='+cityId+'&dateRad='+dateRad);
+		});
+	});
+</script>
+</body>
+</html>

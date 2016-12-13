@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+	
+</head>
+<body>
+<#include "/menu/header.html"/>
+<#include "/menu/menu.html"/>
+
+<section class="content">
+	<section class="widget">
+		<header>
+			<span class="icon">&#128318;</span>
+			<hgroup>
+				<h1>订单统计</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+			<aside>
+				<button class="left-btn">&#59229;</button><button class="right-btn">&#59230;</button>
+			</aside>
+			
+		</header>
+		<meta charset="utf-8">
+		<div class="search_content">
+			<div class="field-wrap1">
+				<form action="order-table" method="post">
+			 		<#include "/menu/search.html"/>
+                </form>
+			</div>
+		</div>
+		<div class="content cycle">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+			<div id="flot-example-1" class="graph-area">
+			<div id="container2"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+		</div>
+		
+	</section>
+		<section class="widget">
+		<header>
+			<span class="icon">&#128196;</span>
+			<hgroup>
+				<h1>订单统计</h1>
+				<h2>order statistics</h2>
+				
+			</hgroup>
+		</header>
+		<div id="main" class="content">
+			<#include "order-table-iframe.html"/>
+		</div>
+	</section>
+</section>
+ <#include "/menu/meta.html"/>
+<script type="text/javascript">
+// Feature slider for graphs
+ $('.cycle').cycle({
+	fx: "scrollHorz",
+	timeout: 0,
+    slideResize: 0,
+    prev:    '.left-btn', 
+    next:    '.right-btn'
+}); 
+</script>
+<script type="text/javascript">
+$(function () {
+	var depotId="${condtion.depotId}";	
+	$("#depotId").val(depotId);
+	
+    var orderdate = '${orderdate}'.split(",");
+    var orderQuantity = '${orderQuantity}'.split(",");
+    var orderamout = '${orderamout}'.split(",");
+    
+    var cancelorderQuantity = '${cancelorderQuantity}'.split(",");
+    var cancelorderAmount = '${cancelorderAmount}'.split(",");
+    
+    var returnorderQuantity = '${returnorderQuantity}'.split(",");
+    var returnorderAmount = '${returnorderAmount}'.split(",");
+  
+    var orderdateObj = new Array();
+   
+    var orderQuantityArr = new Array();
+    var orderamoutArr = new Array();
+    
+    var cancelorderQuantityArr = new Array();
+    var cancelorderAmountArr = new Array();
+    
+    var returnorderQuantityArr = new Array();
+    var returnorderAmountArr = new Array();
+    
+    for(var i=0;i<orderdate.length;i++){
+    	orderdateObj.push(parseInt(orderdate[i]));
+	 }
+    //下单
+    for(var i=0;i<orderQuantity.length;i++){
+    	orderQuantityArr.push(parseInt(orderQuantity[i]));
+	 }
+    for(var i=0;i<orderamout.length;i++){
+    	orderamoutArr.push(parseInt(orderamout[i]));
+	 }
+    //取消
+    for(var i=0;i<cancelorderQuantity.length;i++){
+    	cancelorderQuantityArr.push(parseInt(cancelorderQuantity[i]));
+	 }
+    for(var i=0;i<cancelorderAmount.length;i++){
+    	cancelorderAmountArr.push(parseInt(cancelorderAmount[i]));
+	 }
+    //退货
+    for(var i=0;i<returnorderQuantity.length;i++){
+    	returnorderQuantityArr.push(parseInt(returnorderQuantity[i]));
+	 }
+    for(var i=0;i<returnorderAmountArr.length;i++){
+    	returnorderAmountArrArr.push(parseInt(returnorderAmountArr[i]));
+	 }
+  /*   Highcharts.setOptions({
+        colors: ['#2f7ed8']
+    }); */
+    $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '订单金额统计'
+        },
+        xAxis: {
+            categories: orderdate,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '金额 (k)'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} 元</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                pointWidth: 30 ,
+                dataLabels:{
+                	 enabled:false, // dataLabels设为true
+                     style:{
+                         color:'#D7DEEA'
+                     }
+                }
+            }
+        },
+        series: [{
+            name: '下单金额',
+            data: orderamoutArr
+
+        }, {
+            name: '取消金额',
+            data: cancelorderAmountArr
+
+        }, {
+            name: '退货金额',
+            data: returnorderAmountArr
+
+        }]
+    });
+    
+    $('#container2').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '订单订单量统计'
+        },
+        xAxis: {
+            categories: orderdate,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '订单量 (个)'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y} 个</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                pointWidth: 30 
+            }
+        },
+        series: [{
+            name: '下单量',
+            data: orderQuantityArr
+
+        }, {
+            name: '取消订单量',
+            data: cancelorderQuantityArr
+
+        }, {
+            name: '退货订单量',
+            data: returnorderQuantityArr
+
+        }]
+    });
+    
+    
+});
+</script>
+ <script type="text/javascript">
+	//分页
+	$(function(){
+		var startDate = $("#startDate").val();
+		var endDate = $("#endDate").val();
+		var depotId = $("#depotId").val();
+		$(".bt_blue").live("click", function(){
+			$("#main").load($(this).attr("ajaxUrl")+'&startDate='+startDate+'&endDate='+endDate+'&depotId='+depotId);
+		});
+	});
+</script>
+</body>
+</html>

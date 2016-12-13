@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopOrdersSourceDao">
+	<resultMap id="DmDailyShopOrdersSourceResult" type="com.dshl.bigdata.web.entity.DmDailyShopOrdersSource">
+			<result property="orderDate" column="order_date" />
+			<result property="orderQuantity" column="orderQuantity" />
+			<result property="orderAmount" column="orderAmount" />
+			<result property="ReferType" column="ReferType" />
+			<result property="RegionId" column="RegionId" />
+			<result property="RegionName" column="RegionName" />
+			<result property="RegionCityId" column="RegionCityId" />
+			<result property="RegionCity" column="RegionCity" />
+			<result property="Longitude" column="Longitude" />
+			<result property="Latitude" column="Latitude" />
+	</resultMap>
+	<select id="getByOrderDate" parameterType="java.util.Map" resultMap="DmDailyShopOrdersSourceResult">
+		SELECT 	SUM(orderQuantity)orderQuantity ,
+				SUM(orderAmount) orderAmount, 
+				ReferType
+		FROM dm_daily_shop_orders_source
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  order_date  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  order_date  &lt;= #{param.endDate}
+			</if>
+			<if test="param.cityId != null and param.cityId !=''">
+			   and  RegionCityId  = #{param.cityId}
+			</if>
+		</where>
+		GROUP BY ReferType
+	</select>
+</mapper>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+				<thead align="center">
+					<tr>
+						<td>时间</th>
+						<td>均额</th>
+					</tr>
+				</thead>
+					<tbody align="center">
+					 <#list result as order>
+						<tr>
+							<#if condtion.dateRad=='0'>
+								<td>${order.orderDate?string("yyyy-MM-dd")} </td>
+							</#if>
+							<#if condtion.dateRad=='1'>
+								<td>${order.orderDate?string("yyyy-MM")} </td>
+							</#if>
+							<td>${order.average!""}</td>
+						
+						</tr>
+					</#list>	
+					</tbody>
+					<td ><@cont.pager pagerInfo = pagerInfo url ="order-average-iframe"/></td>
+				</table>

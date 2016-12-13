@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopSupplierStatisDao">
+	<resultMap id="DmDailyShopSupplierStatisResult" type="com.dshl.bigdata.web.entity.DmDailyShopSupplierStatis">
+			<result property="dateCreate" column="dateCreate" />
+			<result property="supplierName" column="supplierName" />
+			<result property="userQuantity" column="userQuantity" />
+			<result property="activityUser" column="activityUser" />
+			<result property="supplierId" column="supplierId" />
+			<result property="orderQuantity" column="orderQuantity" />
+			<result property="orderAmount" column="orderAmount" />
+	</resultMap>
+	<select id="getSupplierStatisByDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM(
+			SELECT count(*)c
+			FROM dm_daily_shop_supplier_statis
+			<where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  dateCreate  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  dateCreate  &lt;= #{param.endDate}
+				</if>
+			</where>
+			GROUP BY supplierId
+		)t
+	</select>
+	
+	<select id="getSupplierStatisByDate" parameterType="java.util.Map" resultMap="DmDailyShopSupplierStatisResult">
+		SELECT 
+		 dateCreate,
+		 supplierName,
+		 SUM(userQuantity) as userQuantity,
+		 activityUser, 
+		 orderQuantity,
+		 orderAmount
+		from dm_daily_shop_supplier_statis
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  dateCreate  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  dateCreate  &lt;= #{param.endDate}
+			</if>
+		</where>
+		GROUP BY supplierId
+		ORDER BY dateCreate desc limit #{param.pager.start},#{param.pager.pageSize}
+	</select>
+</mapper>

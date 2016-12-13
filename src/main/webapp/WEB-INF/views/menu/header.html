@@ -1,0 +1,17 @@
+<meta charset="utf-8">
+<div class="testing">
+<section class="user">
+	<div class="profile-img">
+		<p><img src="images/uiface2.png" alt="" height="40" width="40" />店 商 互 联 大 数 据 BI 系 统</p>
+	</div>
+	<div class="buttons">
+		<button class="ico-font">&#9206;</button>
+		<#if user?? && user?length gt 0>
+		<span class="button blue">欢迎您：${user.userName}&nbsp;&nbsp;&nbsp;${user.roleName}</span>
+		<span class="button blue"><a href="index.html">退出</a></span>
+		<#else>
+		<span class="button blue"><a href="index.html">请登录</a></span>
+		</#if>
+	</div>
+</section>
+</div>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+<#include "/menu/header.html"/>
+<#include "/menu/menu.html"/>
+
+<section class="content">
+	<section class="widget">
+		<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>商品销售量分析</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+		</header>
+		<div class="search_content">
+			<div class="field-wrap1">
+				<form action="sale" method="post">
+					城市：
+					<select class="cs-select cs-skin-border" id="cityId" name="cityId">
+					    <option  value="" >全部</option>
+						<option value="643">北京市</option>
+						<option value="101">杭州市</option>
+						<option value="1945">广州市</option>
+						<option value="1972">深圳市</option>
+						<option value="285">苏州市</option>
+						<option value="1165">青岛市</option>
+					</select>
+					&nbsp;&nbsp;时间：
+					<input value="${condtion.startDate!''}" type="text" class="Wdate" id="startDate" name="startDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">-
+					<input value="${condtion.endDate!''}" type="text" class="Wdate" id="endDate" name="endDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})" >
+					&nbsp;&nbsp;品牌：<select class="cs-select cs-skin-border" id="brandId" name="brandId">
+						<option  value="">所有</option>
+						<#list shopBrandList as shopBrand>
+							<option  value="${shopBrand.brandId!''}">${shopBrand.brandName!''}</option>
+						</#list>
+					</select>
+					&nbsp;&nbsp;商品：<input class="Wdate" type="text" name="productName" value="" id="productName" placeholder="请输入要查询的商品"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="day" name="dateRad" value="0" checked="checked"/><label for="day">日</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="month" name="dateRad" value="1"/><label for="month">月</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="year" name="dateRad" value="2"/><label for="year">年</label>
+					<button type="submit" class="">搜索</button> 
+                </form>
+			</div>
+		</div>
+		
+        <div class="content cycle">
+			<div id="flot-example-2" class="graph-area">
+		    	<div id="container2"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+		</div>
+	
+	<!-- 销售额统计 -->
+	</section>
+		<section class="widget">
+			<div class="content">
+			<header>
+			<span class="icon">&#128200;</span>
+			<hgroup>
+				<h1>商品销售额分析</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup> 
+		</header>
+		<div class="content">
+			<div id="flot-example-2" class="graph-area">
+			   <div id="container"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+			</div>
+		</div>
+	</div>
+	</section>
+		<section class="widget">
+		<header>
+			<span class="icon">&#128196;</span>
+			<hgroup>
+				<h1>商品销售列表</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+		</header>
+		<div id="main" class="content">
+		   <#include "product-sale-iframe.html"/>
+		</div>
+	</section>
+</section>
+<#include "/menu/meta.html"/>
+<script type="text/javascript">
+$(function(){
+	$("#productName").click(function(){
+		$("#brandId").val('');
+	});
+	$("#brandId").click(function(){
+		$("#productName").val('');
+	});
+	
+});
+
+//单选按钮
+$(function(){
+	var dateRad = "${condtion.dateRad!''}"
+	if(dateRad=="1"){
+		$("#month").attr("checked","checked");
+	}
+	if(dateRad=="2"){
+		$("#year").attr("checked","checked");
+	}
+});
+
+//回显
+$(function(){
+	var cityId = "${condtion.cityId!''}";
+	$("#cityId").val(cityId);
+	
+	var brandId = "${condtion.brandId!''}";
+	$("#brandId").val(brandId);
+	
+	var productName = "${productName!''}";
+	$("#productName").val(productName);
+});
+
+$(function () {
+	//获取当前的选项
+	var name;
+	var productName=$("#productName").val()
+	
+	var brandName=$("#brandId option:selected").text();
+	if(brandName !=''){
+		name=brandName;
+	}
+	if(productName !=''){
+		name=productName;
+	}
+	
+    var orderdate = '${orderdate!""}'.split(",");
+    var orderamout = '${orderamout!""}'.split(",");
+    var ordercount = '${ordercount!""}'.split(",");
+  
+    var arrayObj = new Array();
+    var ordercountArr = new Array();
+    
+    for(var i=0;i<orderamout.length;i++){
+		 arrayObj.push(parseInt(orderamout[i]));
+	 }
+    for(var i=0;i<ordercount.length;i++){
+    	ordercountArr.push(parseInt(ordercount[i]));
+		
+	 }
+    $('#container').highcharts({
+        title: {
+            text: "【"+name+'】商品销售额统计',
+            x: -20 //center
+        },
+     
+        colors: ['#002448'] ,
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: orderdate
+        },
+        yAxis: {
+            title: {
+                text: '金额(￥) '
+            },
+           /*  tickInterval:1, // 刻度值 */
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '元'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '金额',
+            data:  arrayObj
+        }]
+    });
+    
+    $('#container2').highcharts({
+        title: {
+            text: "【"+name+'】销售量统计',
+            x: -20 //center
+        },
+        colors: ['#002448'] ,
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: orderdate
+        },
+        yAxis: {
+            title: {
+                text: '个数 '
+            },
+           /*  tickInterval:1, // 刻度值 */
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '销售数量',
+            data:  ordercountArr
+        }]
+    });
+    
+});
+</script>
+<script type="text/javascript">
+	//分页
+	$(function(){
+		 var startDate = $("#startDate").val();
+		var endDate = $("#endDate").val();
+		var cityId = $("#cityId").val();
+		var brandId =$("#brandId").val();
+		var productName = "${productName!''}";
+		var dateRad=$("input:checked").val(); 
+		
+		 $(".bt_blue").live("click", function(){
+			 
+			$.ajax({
+				type :'POST',
+				url:$(this).attr("ajaxUrl"),
+				data:{startDate:startDate, endDate:endDate, cityId:cityId, brandId:brandId, dateRad:dateRad, productName:productName},
+				dataType:'html',
+				success:function(data){
+					$("#main").html(data);
+				}
+			})
+		}); 
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+	<#include "/menu/header.html"/>
+	<#include "/menu/menu.html"/>
+	<section class="content " >
+		<section class="widget">
+			<header>
+				<<span class="icon">&#128318;</span>
+				<hgroup>
+					
+					<h1>优惠券活动统计</h1>
+					<h2>shopping mall order statistics</h2>
+				</hgroup>
+			</header>
+			<!-- 搜索过滤条件栏 -->
+			<div class="search_content">
+				<div class="field-wrap1">
+					<form action="giftrecord" method="post">
+						&nbsp;&nbsp;城市：
+						<select class="cs-select cs-skin-border" id="cityId" name="cityId">
+					    <option  value="0" >全部</option>
+						<option value="643">北京市</option>
+						<option value="101">杭州市</option>
+						<option value="1945">广州市</option>
+						<option value="1972">深圳市</option>
+						<option value="285">苏州市</option>
+						<option value="1165">青岛市</option>
+					</select>
+						&nbsp;&nbsp;时间：
+						<input value="${condtion.startDate!''}" type="text" class="Wdate" id="startDate" name="startDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">-
+						<input value="${condtion.endDate!''}" type="text" class="Wdate" id="endDate" name="endDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})" >
+						<button type="submit" class="">搜索</button> 
+	    			</form>
+	    		</div>
+			</div>
+			
+			<div class="content" style="border-bottom-width: 600px; padding-bottom: 25px;">
+				<!-- 优惠券使用的柱状图统计 -->
+				<div id="flot-example-1" class="content">
+				   <div id="gift"  style="width: 1356px; height: 300px; margin: 0 auto; reflow:true"></div>
+				</div>
+			</div>
+		</section>
+		<section class="widget">
+			<header>
+				<span class="icon">&#128196;</span>
+				<hgroup>
+					
+					<h1>赠品列表</h1>
+					<h2>category statistics</h2>
+				</hgroup>
+			</header>
+			
+			<div class="content" id="main">
+				<#include "market-giftrecord-iframe.html"/>
+			</div>
+	 	</section>
+	</section>
+<#include "/menu/meta.html"/>
+<script type="text/javascript">
+	$(function(){
+		var cityId ='${condtion.cityId?c}';
+		$("#cityId").val(cityId);
+	});
+	$(function () {
+		 var giftName = '${giftName}'.split(",");
+		 var giftCount = "${giftCount}".split(",");
+		 var giftArr = new Array();
+		 
+		 for(var i=0;i<giftCount.length;i++){
+			 giftArr.push(parseInt(giftCount[i]));
+			 }
+		 
+	    $('#gift').highcharts({
+	        chart: {
+	            type: 'bar'
+	        },
+	        title: {
+	            text: '优惠券活动统计'
+	        },
+	        xAxis: {
+	            categories: giftName
+	        },
+	        yAxis: {
+	            min: 0,
+	            title: {
+	            	text: '单位：（件）',
+	                align: 'high'
+	            }
+	        },
+	        tooltip: {
+		        valuePrefix: '',
+		        valueSuffix: '件'
+		    },
+		    plotOptions: {
+	            bar: {
+	                dataLabels: {
+	                    enabled: true
+	                }
+	            }
+	        },
+	        legend: {
+	            layout: 'vertical',
+	            align: 'right',
+	            verticalAlign: 'top',
+	            x: -40,
+	            y: 100,
+	            floating: true,
+	            borderWidth: 1,
+	            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+	            shadow: true
+	        },
+	        credits: {
+	            enabled: false
+	        },
+	        series: [{
+	            name: '赠品数量',
+	            data: giftArr
+	        }]
+	    });
+	});
+</script>
+<script type="text/javascript">
+	//分页
+    $(function(){
+    	var startDate = $('#startDate').val();
+    	var endDate = $('#endDate').val();
+    	//分页load 
+        $('.bt_blue').live('click',function(){
+          $("#main").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate);
+        })
+    });
+</script>
+</body>
+</html>

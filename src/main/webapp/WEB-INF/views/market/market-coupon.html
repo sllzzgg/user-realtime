@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+	<#include "/menu/header.html"/>
+	<#include "/menu/menu.html"/>
+	<section class="content " >
+		<section class="widget">
+			<header>
+				<span class="icon">&#128318;</span>
+				<hgroup>
+					
+					<h1>优惠券活动统计</h1>
+					<h2>shopping mall order statistics</h2>
+				</hgroup>
+			</header>
+			<!-- 搜索过滤条件栏 -->
+			<div class="search_content">
+				<div class="field-wrap1">
+					<form action="coupon" method="post">
+						&nbsp;&nbsp;时间：
+						<input value="${condtion.startDate!''}" type="text" class="Wdate" id="startDate" name="startDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})">-
+						<input value="${condtion.endDate!''}" type="text" class="Wdate" id="endDate" name="endDate" onClick="WdatePicker({doubleCalendar:false,skin:'twoer',dateFmt:'yyyy-MM-dd'})" >
+						&nbsp;&nbsp;优惠券类型：
+						<select class="cs-select cs-skin-border" id="couponType" name="couponType">
+							<option value="">请选择</option>
+							<option value="1">普通优惠券</option>
+							<option value="2">兑换优惠券</option>
+							<option value="3">赠送优惠券</option>
+							
+						</select>
+						<button type="submit" class="">搜索</button> 
+	    			</form>
+	    		</div>
+		    	<div class="content">
+					预算总额:<input value="${sentTotalAmount!'0'}" disabled="disabled"/>&nbsp;&nbsp;
+					使用总额：<input value="${useTotalAmount!'0'}" disabled="disabled"/>&nbsp;&nbsp;
+					剩余总额：<input value="${remainTotalAmount!'0'}" disabled="disabled"/>
+				</div>
+			</div>
+			
+			<div class="content" style="border-bottom-width: 600px; padding-bottom: 25px;">
+				<!-- 优惠券使用的柱状图统计 -->
+				<div id="flot-example-1" class="content">
+				   <div id="container"  style="min-width:400px;height:800px"></div>
+				</div>
+			</div>
+		</section>
+		<section class="widget">
+			<header>
+				<span class="icon">&#128196;</span>
+				<hgroup>
+					
+					<h1>优惠券列表</h1>
+					<h2>category statistics</h2>
+				</hgroup>
+			</header>
+			
+			<div class="content" id="main">
+				<#include "market-coupon-iframe.html"/>
+			</div>
+			
+	 	</section>
+	</section>
+<#include "/menu/meta.html"/>
+
+<script type="text/javascript">
+	$('.cycle').cycle({
+		fx: "scrollHorz",
+		timeout: 0,
+	    slideResize: 0,
+	    prev:    '.left-btn', 
+	    next:    '.right-btn'
+	}); 
+	$(function(){
+		var couponType = "${condtion.couponType!''}";
+		$("#couponType").val(couponType);
+	});
+	
+	//剩余优惠券
+	$(function () {
+	    var couponName = '${couponName}'.split(",");
+	    var remainCouponAmount = '${remainCouponAmount}'.split(",");
+ 		var couponAmount = '${couponAmount}'.split(",");
+ 		var sendCouponAmount = '${sendCouponAmount}'.split(",");
+	    //剩余优惠券
+	    var remainAmountArr = new Array();
+	    //使用优惠券
+		var amountArr = new Array();
+	    //总的优惠券
+	    var sendAmountArr = new Array();
+	    
+	    for(var i=0;i<couponAmount.length;i++){
+	    	amountArr.push(parseInt(couponAmount[i]));
+		 }
+	    
+	    for(var i=0;i<remainCouponAmount.length;i++){
+	    	remainAmountArr.push(parseInt(remainCouponAmount[i]));
+		 }
+	    
+	    for(var i=0;i<sendCouponAmount.length;i++){
+	    	sendAmountArr.push(parseInt(sendCouponAmount[i]));
+		 }
+	    
+	    
+		$('#container').highcharts({
+		    chart: {
+		        type: 'bar'
+		    },
+		    title: {
+		        text: '优惠券的金额'
+		    },
+		    xAxis: {
+		        categories: couponName,
+		        title: {
+		            text: null
+		        }
+		    },
+		    yAxis: {
+		        min: 0,
+		        title: {
+		        	text: '单位：（元）',
+	                align: 'high'
+		          
+		        },
+		        labels: {
+		            overflow: 'justify'
+		        }
+		    },
+		    tooltip: {
+		        valuePrefix: '￥',
+		        valueSuffix: '元'
+		    },
+	        
+		    plotOptions: {
+	            bar: {
+	                dataLabels: {
+	                    enabled: true
+	                }
+	            }
+	        },
+	        legend: {
+	            layout: 'vertical',
+	            align: 'right',
+	            verticalAlign: 'top',
+	            x: -40,
+	            y: 100,
+	            floating: true,
+	            borderWidth: 1,
+	            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+	            shadow: true
+	        },
+	        credits: {
+	            enabled: false
+	        },
+		    series: [{
+		        name: '剩余金额',
+		        data: remainAmountArr
+		    },{
+		    	name: '使用金额',
+		        data: amountArr
+		    },{
+		    	name: '总金额',
+		        data: sendAmountArr
+		    }]
+		});
+	});
+</script>
+<script type="text/javascript">
+	//分页
+    $(function(){
+    	var startDate = $('#startDate').val();
+    	var endDate = $('#endDate').val();
+    	var couponType=$("#couponType").val();
+    	
+    	
+    	//分页load 
+        $('.bt_blue').live('click',function(){
+          $("#main").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate+'&couponType='+couponType);
+        })
+    });
+</script>
+</body>
+</html>

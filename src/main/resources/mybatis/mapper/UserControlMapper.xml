@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dshl.bigdata.web.dao.UserControlDao" >
+	<resultMap id="userLoginMap" type="com.dshl.bigdata.web.entity.User">
+		<result column="id" property="userId"/>
+		<result column="userName" property="userName"/>
+		<result column="password" property="password"/>
+		<result column="role_id" property="roleId"/>
+		<result column="role_name" property="roleName"/>
+	</resultMap>
+	
+	<!--用户列表 -->
+	<select id="getUserList" parameterType="java.util.Map" resultMap="userLoginMap">
+		SELECT  id, userName, password, role_id, role_name
+		FROM user_role
+		limit #{param.pager.start}, #{param.pager.pageSize}
+	</select>
+	<select id="getUserListCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(*)
+		FROM user_role
+	</select>
+</mapper>

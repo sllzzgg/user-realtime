@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyShopProductsSaleDao">
+	<resultMap id="DmDailyShopProductsFlowResult" type="com.dshl.bigdata.web.entity.DmDailyShopProductsSale">
+			<result property="orderDate" column="order_date" />
+			<result property="sku" column="sku" />
+			<result property="productName" column="productName" />
+			<result property="brandid" column="brandid" />
+			<result property="brandName" column="brandName" />
+			<result property="totalQuantity" column="totalQuantity" />
+			<result property="sellPrice" column="sellPrice" />
+			<result property="totalAmount" column="totalAmount" />
+			<result property="productQuantity" column="productQuantity" />
+			<result property="depotId" column="depotId" />
+			<result property="RegionId" column="RegionId" />
+			<result property="RegionCity" column="RegionCity" />
+	</resultMap>
+	
+	<!-- 按日期商品查询 -->
+  	<select id="getProductByDate" parameterType="java.util.Map" resultMap="DmDailyShopProductsFlowResult">
+		SELECT 
+       		order_date, 
+       		SUM(productQuantity) productQuantity, 
+       		SUM(totalAmount) totalAmount
+        FROM dm_daily_shop_products_sale
+		<where>
+		    1 =1 
+			<if test="param.startDate != null and param.startDate !=''">
+			   and  order_date  &gt;= #{param.startDate}
+			</if>
+			<if test="param.endDate != null and param.endDate !=''">
+			   and  order_date  &lt;= #{param.endDate}
+			</if>
+		   <if test="param.cityId != null and param.cityId !=''">
+			   and  RegionId  = #{param.cityId}
+		   </if>
+		   <if test="param.brandId != null and param.brandId !=''">
+			   and  brandid  = #{param.brandId}
+		   </if>
+		   <if test="param.productName != null and param.productName!=''">
+			   and  productName  like #{param.productName}
+		   </if>
+		</where>
+		 GROUP BY 
+		 		<if test='param.dateRad =="0"'>order_date</if> 
+		 		<if test='param.dateRad =="1"'>DATE_FORMAT(order_date,'%Y-%m')</if>
+		 		<if test='param.dateRad=="2"'>DATE_FORMAT(order_date,'%Y')</if>
+		 ORDER BY order_date DESC <if test="param.pag !=null and param.pag !=''"> limit #{param.pager.start}, #{param.pager.pageSize}</if>
+	</select>
+	
+	<!-- 按日查询总数量 -->
+	<select id="getProductByDateCount" parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM (
+			 SELECT count(*)c
+			 FROM dm_daily_shop_products_sale
+			 <where>
+			    1 =1 
+				<if test="param.startDate != null and param.startDate !=''">
+				   and  order_date  &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate != null and param.endDate !=''">
+				   and  order_date  &lt;= #{param.endDate}
+				</if>
+			    <if test="param.cityId != null and param.cityId !=''">
+				   and  RegionId  = #{param.cityId}
+			    </if>
+			    <if test="param.brandId != null and param.brandId !=''">
+				   and  brandid  = #{param.brandId}
+			    </if>
+			    <if test="param.productName != null and param.productName!=''">
+				   and  productName  like #{param.productName}
+			    </if>
+			 </where>
+			 GROUP BY 
+			 		<if test='param.dateRad =="0"'>order_date</if> 
+			 		<if test='param.dateRad =="1"'>DATE_FORMAT(order_date,'%Y-%m')</if>
+			 		<if test='param.dateRad=="2"'>DATE_FORMAT(order_date,'%Y')</if>
+		)t
+	</select>
+</mapper>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >分类名称</th>
+						<th>订单数</th>
+						<th>销售额</th>
+					</tr>
+				</thead>
+				<tbody>
+				 <#list cates as cate>
+					<tr>
+						<td>${cate.supercategoryName!""}</td>
+						<td>${cate.orderCount!""}</td>
+						<td>${cate.orderaMount!'0'}</td>
+					</tr>
+				</#list>	
+				</tbody>
+				<td><@cont.pager pagerInfo = pagerInfo url ="category-table-iframe"/></td>
+			</table>

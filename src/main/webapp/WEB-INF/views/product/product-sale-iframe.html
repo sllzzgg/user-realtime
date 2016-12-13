@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >时间</th>
+						<th>订单数</th>
+						<th>销售额</th>
+					</tr>
+				</thead>
+				<#if dataList??>
+				<tbody>	
+				 <#list dataList as flow>
+					<tr>
+						<#if condtion.dateRad == '0' && flow.orderDate??>
+							<td>${flow.orderDate?string('yyyy-MM-dd')}</td>
+							<td>${flow.productQuantity!"0"}</td>
+							<td>${flow.totalAmount!"0"}	</td>
+						</#if>
+						<#if condtion.dateRad == '1' && flow.orderDate??>
+							<td>${flow.orderDate?string('yyyy年MM月')}</td>
+							<td>${flow.productQuantity!"0"}</td>
+							<td>${flow.totalAmount!"0"}	</td>
+						</#if>
+						<#if condtion.dateRad == '2' && flow.orderDate??>
+							<td>${flow.orderDate?string('yyyy年')}</td>
+							<td>${flow.productQuantity!"0"}</td>
+							<td>${flow.totalAmount!"0"}	</td>
+						</#if>
+					</tr>
+				</#list>	
+				</tbody>
+				<td><@cont.pager pagerInfo = pagerInfo url ="sale-iframe"/></td>
+				</#if>
+			</table>

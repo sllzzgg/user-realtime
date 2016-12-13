@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "macro_controller.html" as cont/>
+<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >时间 </th>
+						<th>配送站 </th>
+						<th>客户数</th>
+						<th>活跃数 </th>
+						<th>订单数  </th>
+						<th>销售额  </th>
+					</tr>
+				</thead>
+					<tbody>
+					 <#list statis as stat>
+						<tr>  
+							<td>${stat.dateCreate}</td>
+							<td>${stat.supplierName!""}</td>
+							<td>${stat.userQuantity!"0"}</td>
+							<td>${stat.activityUser!"0"}</td>
+							<td>${stat.orderQuantity!"0"}</td>
+							<td>${stat.orderAmount!"0"}</td>
+						</tr>
+					</#list>	
+					</tbody>
+					<td></td>
+					<td><@cont.pager pagerInfo = pagerInfo url ="supplier-statis-iframe"/></td>
+				</table>

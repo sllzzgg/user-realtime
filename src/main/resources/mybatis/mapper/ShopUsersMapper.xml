@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dshl.bigdata.web.dao.ShopUsersDao" >
+  <resultMap id="BaseResultMap" type="com.dshl.bigdata.web.entity.ShopUsers" >
+    <result column="userId" property="userid" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="gravatar" property="gravatar" jdbcType="VARCHAR" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="regionId" property="regionId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    userId, username, nickname, phone, email, address, gravatar, latitude, longitude, regionId 
+  </sql>
+  
+  <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select users.userId,users.username,users.nickname,users.phone,users.address,users.latitude,users.longitude,users.regionId,rpt.regionname as city 
+    from shop_users users
+    inner join shop_regiondepot rpt ON users.regionid = rpt.regionid 
+    where userId = #{userid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByParams"  parameterType="com.dshl.bigdata.web.entity.ShopUsersQueryParams" resultMap="BaseResultMap">
+		select 
+    <include refid="Base_Column_List" />
+    from shop_users
+  </select>
+  
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+   SELECT count(users.userId) as sumNum from shop_users users 
+  </select>
+  
+  <insert id="insert" parameterType="com.dshl.bigdata.web.entity.ShopUsers" >
+    insert into shop_users (userId, username, nickname, 
+      phone, email, address, 
+      gravatar, latitude, longitude
+      )
+    values (#{userid,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{gravatar,jdbcType=VARCHAR}, #{latitude,jdbcType=DOUBLE}, #{longitude,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dshl.bigdata.web.entity.ShopUsers" >
+    insert into shop_users
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="gravatar != null" >
+        gravatar,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
+      <if test="longitude != null" >
+        longitude,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="gravatar != null" >
+        #{gravatar,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+</mapper>

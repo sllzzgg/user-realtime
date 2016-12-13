@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dshl.bigdata.web.dao.DmDailyMarketDiscountDao">
+
+	<resultMap type="com.dshl.bigdata.web.entity.OrderDiscount" id="discountMap">
+		<result column="orderCount" property="orderCount"/>
+		<result column="orderAmount" property="orderAmount"/>
+		<result column="discountAmount" property="discountAmount"/>
+		<result column="createDate" property="createDate"/>
+	</resultMap>
+	<!-- 商品折扣数据 -->
+	<select id="getDiscount" parameterType="java.util.Map" resultMap="discountMap">
+		SELECT SUM(orderCount) as orderCount, 
+			   SUM(orderAmount) as orderAmount, 
+			   SUM(discountAmount) as discountAmount, 
+			   createDate
+		FROM shop_discount
+		<where>
+				1=1
+				<if test="param.startDate !=null and param.startDate !=''">
+					and createDate &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate !=null and param.endDate !=''">
+					and createDate &lt;= #{param.endDate}
+				</if>
+				<if test="param.depotId !=null and param.depotId !=''">
+					and depotId = #{param.depotId}
+				</if>
+			</where>
+		GROUP BY 
+				<if test='param.dataRdaio=="0"'>createDate </if>
+				<if test='param.dataRdaio=="1"'>DATE_FORMAT(createDate,'%Y-%m')</if>
+		
+		order by createDate desc limit #{param.pager.start}, #{param.pager.pageSize}
+	</select>
+	<!-- 商品折扣数据总数 -->
+	<select id="getDiscountCount"  parameterType="java.util.Map" resultType="Integer">
+		SELECT count(t.c)
+		FROM(
+			SELECT count(*)c
+			FROM shop_discount
+			<where>
+				1=1
+				<if test="param.startDate !=null and param.startDate !=''">
+					and createDate &gt;= #{param.startDate}
+				</if>
+				<if test="param.endDate !=null and param.endDate !=''">
+					and createDate &lt;= #{param.endDate}
+				</if>
+				<if test="param.depotId !=null and param.depotId !=''">
+					and depotId = #{param.depotId}
+				</if>
+			</where>
+			group by 
+				<if test='param.dataRdaio=="0"'>createDate </if>
+				<if test='param.dataRdaio=="1"'>DATE_FORMAT(createDate,'%Y-%m')</if>
+			)t
+	</select>
+</mapper>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+	<meta charset="utf-8">
+	<title>店商互联大数据BI系统</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="robots" content="" />
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/style2.css" media="all" />
+</head>
+<body>
+<#include "/menu/header.html"/>
+<#include "/menu/menu.html"/>
+<section class="content">
+	<section class="widget">
+		
+		<header>
+			<span class="icon">&#128318;</span>
+			<hgroup>
+				<h1>分类商品销量统计</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+		</header>
+		<meta charset="utf-8">
+		<div class="search_content">
+			<div class="field-wrap1">
+				<form action="category" method="post">
+					<#include "/menu/search.html"/>
+                </form>
+			</div>
+		</div>
+		<div class="content">
+			<div id="flot-example-2" class="content">
+			   <div id="container"  style="min-width:400px;height:600px"></div>
+			</div>
+			<div id="flot-example-1" class="content">
+				<div id="container2"  style="min-width:400px;height:600px"></div>
+			</div>
+		</div>
+	</section>
+		<section class="widget">
+		<header>
+			<span class="icon">&#9716;</span>
+			<hgroup>
+				<h1>分类商品销售额比例</h1>
+				<h2>shopping mall order statistics</h2>
+			</hgroup>
+		</header>
+		<div class="content">
+			<div id="flot-example-2" class="content">
+			   <div id="pie" style="width:100%;height:350px;"></div>
+			</div>
+		</div>
+	</section>
+	<section class="widget">
+		<header>
+			<span class="icon">&#128196;</span>
+			<hgroup>
+				
+				<h1>分类统计</h1>
+				<h2>category statistics</h2>
+			</hgroup>
+			
+		</header>
+		<div id="main" class="content">
+			<#include "category-table-iframe.html"/>
+		</div>
+ 	</section>
+</section>
+<#include "/menu/meta.html"/>
+<script type="text/javascript">
+ $('.cycle').cycle({
+	fx: "scrollHorz",
+	timeout: 0,
+    slideResize: 0,
+    prev:    '.left-btn', 
+    next:    '.right-btn'
+}); 
+</script>
+
+<script type="text/javascript">
+$(function () {
+	var depotId = "${condtion.depotId!''}";
+	$("#depotId").val(depotId);
+	
+	var result = '${result}';
+    var aaaa = JSON.parse(result);
+    var categoryName = '${categoryName}'.split(",");
+    var orderamout = '${orderamout}'.split(",");
+    var ordercount = '${ordercount}'.split(",");
+  
+    var arrayObj = new Array();
+    var ordercountArr = new Array();
+    
+    for(var i=0;i<orderamout.length;i++){
+		 arrayObj.push(parseInt(orderamout[i]));
+	 }
+    for(var i=0;i<ordercount.length;i++){
+    	ordercountArr.push(parseInt(ordercount[i]));
+		
+	 }
+    
+    $('#container').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: '分类商品-销售额排行榜'
+        },
+        xAxis: {
+            categories: categoryName,
+            title: {
+                text: null
+            }
+        },
+        yAxis: {
+            min: 1000,
+            title: {
+                text: '单位： (元)',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valuePrefix: '￥',
+            valueSuffix: '元'
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: '金额',
+            data: arrayObj
+        }]
+    });
+    
+    $('#container2').highcharts({
+        chart: {
+            type: 'bar',
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: '分类商品-销量对比'
+        },
+        xAxis: {
+            categories: categoryName,
+            title: {
+                text: null
+            }
+        },
+        yAxis: {
+            min: 1000,
+            title: {
+                text: '单位：(个)',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+            valuePrefix: '',
+            valueSuffix: '个'
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -40,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+            shadow: true
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: '下单量',
+            data: ordercountArr
+        }]
+    });
+    
+    var piejson = '${result}';
+    var piejsonObj = JSON.parse(piejson);
+    var chart = {
+    	       plotBackgroundColor: null,
+    	       plotBorderWidth: null,
+    	       plotShadow: false
+    	   };
+    	   var title = {
+    	      text: '分类商品 -销售额比例图'   
+    	   };      
+    	   var tooltip = {
+    	      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    	   };
+    	   var plotOptions = {
+    	      pie: {
+    	         allowPointSelect: true,
+    	         cursor: 'pointer',
+    	         dataLabels: {
+    	            enabled: true,
+    	            format: '<b>{point.name}%</b>: {point.percentage:.1f} % ({point.y})',
+    	            style: {
+    	               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+    	            },
+    	            formatter: function() { 
+    	            	 return this.point.name + Highcharts.numberFormat(this.y,2) ;
+    	            }
+    	         }
+    	      }
+    	   };
+    	   var series= [{
+    	      type: 'pie',
+    	      name: 'Browser share',
+    	      data: piejsonObj
+    	   }];     
+    	      
+    	   var json = {};   
+    	   json.chart = chart; 
+    	   json.title = title;     
+    	   json.tooltip = tooltip;  
+    	   json.series = series;
+    	   json.plotOptions = plotOptions;
+    	   $('#pie').highcharts(json);  
+});
+</script>
+<script type="text/javascript">
+	//分页
+    $(function(){
+    	var startDate = $('#startDate').val();
+    	var endDate = $('#endDate').val();
+    	var depotId=$("#depotId").val();
+    	
+    	//分页load 
+        $('.bt_blue').live('click',function(){
+          $("#main").load($(this).attr('ajaxUrl')+'startDate='+startDate+'&endDate='+endDate+'&depotId='+depotId);
+        })
+    });
+</script>
+</body>
+</html>

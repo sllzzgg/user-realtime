@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<#import "/menu/macro_controller.html" as cont/>
+	<table id="myTable" border="0" width="100">
+				<thead>
+					<tr>
+						<th >品牌名称</th>
+						<th>订单数</th>
+						<th>销售额</th>
+					</tr>
+				</thead>
+				<tbody>
+				 <#list brands as brand>
+					<tr>
+						<td>${brand.brandName!''}</td>
+						<td>${brand.orderCount!''}</td>
+						<td>${brand.orderaMount!''}元</td>
+					</tr>
+				</#list>	
+				</tbody>
+				<td><@cont.pager pagerInfo = pagerInfo url ="brand-table-iframe"/></td>
+			</table>

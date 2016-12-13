@@ -1,0 +1,40 @@
+<meta charset="utf-8">
+<title>店商互联大数据BI系统</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="" />
+<meta name="viewport"
+	content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="css/style2.css" media="all" />
+<#import "/menu/macro_controller.html" as cont/>
+				<table id="myTable" border="0" width="100">
+					<thead>
+						<tr>
+							<th >活动名称</th>
+							<th>预算数</th>
+							<th>预算总额</th>
+							<th>发放数</th>
+							<th>发放总额</th>
+							<th>使用数</th>
+							<th>使用总额</th>
+							<th>使用比例</th>
+						</tr>
+					</thead>
+					<tbody>
+						<#list result as coupon>
+						<tr height="27">
+							<td>${coupon.title}</td>
+							<td>${coupon.sendCount!''}</td>
+							<td>${coupon.sentTotal!''}</td>
+							<td>${coupon.sendCount!''}</td>
+							<td>${coupon.sentTotal!''}</td>
+							<td>${coupon.usedCount!''}</td>
+							<td>${coupon.useTotal!''}</td>
+							<td>${coupon.useScale!''}</td>
+						</tr>
+						</#list>
+					</tbody>
+						<td></td>
+						<td></td>
+						<td><@cont.pager pagerInfo = pagerInfo url ="coupon-iframe"/></td>
+				</table>
